@@ -60,40 +60,43 @@ public class ScrollingActivity extends AppCompatActivity {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
-                try {
-                    if (highRes) {
-                        String timeStamp = new SimpleDateFormat("yyyyMMddHHmmss", Locale.ENGLISH).format(new Date());
-                        File storageDir = getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS);
-                        File image = File.createTempFile(
-                                timeStamp,
-                                ".jpg",
-                                storageDir
-                        );
-                        mCurrentPhotoPath = image.getAbsolutePath();
-
-                        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                        if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
-                            Uri photoURI = FileProvider.getUriForFile(getApplicationContext(),
-                                    "de.digisocken.caputhown.fileprovider",
-                                    image
-                            );
-                            // todo: use this high res picture
-                            takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
-                            startActivityForResult(takePictureIntent, CAMERA_REQUEST);
-                        }
-                    } else {
-                        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                        if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
-                            startActivityForResult(takePictureIntent, CAMERA_REQUEST);
-                        }
-                    }
-
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
+                takePic();
             }
         });
+    }
+
+    private void takePic() {
+        try {
+            if (highRes) {
+                String timeStamp = new SimpleDateFormat("yyyyMMddHHmmss", Locale.ENGLISH).format(new Date());
+                File storageDir = getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS);
+                File image = File.createTempFile(
+                        timeStamp,
+                        ".jpg",
+                        storageDir
+                );
+                mCurrentPhotoPath = image.getAbsolutePath();
+
+                Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
+                    Uri photoURI = FileProvider.getUriForFile(getApplicationContext(),
+                            "de.digisocken.caputhown.fileprovider",
+                            image
+                    );
+                    // todo: use this high res picture
+                    takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
+                    startActivityForResult(takePictureIntent, CAMERA_REQUEST);
+                }
+            } else {
+                Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
+                    startActivityForResult(takePictureIntent, CAMERA_REQUEST);
+                }
+            }
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -109,6 +112,9 @@ public class ScrollingActivity extends AppCompatActivity {
         if (id == R.id.action_movie) {
             textView.setText("processing...");
             new ToMovieTask().execute();
+            return true;
+        } else if (id == R.id.action_picture) {
+            takePic();
             return true;
         }
         return super.onOptionsItemSelected(item);
@@ -174,8 +180,8 @@ public class ScrollingActivity extends AppCompatActivity {
             Bitmap photo = (Bitmap) data.getExtras().get("data");
             Bitmap mutableBitmap = Bitmap.createScaledBitmap(
                     photo,
-                    photo.getWidth(),
-                    photo.getHeight(),
+                    2*photo.getWidth(),
+                    2*photo.getHeight(),
                     true
             );
             bmps.add(mutableBitmap);
@@ -187,8 +193,8 @@ public class ScrollingActivity extends AppCompatActivity {
             dr.setBounds(
                     0,
                     0,
-                    mutableBitmap.getWidth(),
-                    mutableBitmap.getHeight()
+                    mutableBitmap.getWidth()/2,
+                    mutableBitmap.getHeight()/2
             );
 
             ImageSpan isp = new ImageSpan(dr);
