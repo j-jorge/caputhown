@@ -174,14 +174,15 @@ public class ScrollingActivity extends AppCompatActivity {
             Bitmap photo = (Bitmap) data.getExtras().get("data");
             Bitmap mutableBitmap = Bitmap.createScaledBitmap(
                     photo,
-                    2*photo.getWidth(),
-                    2*photo.getHeight(),
+                    photo.getWidth(),
+                    photo.getHeight(),
                     true
             );
             bmps.add(mutableBitmap);
 
-            CharSequence sp = Integer.toString(bmps.size())+"  \n";
+            CharSequence sp = "  " + Integer.toString(bmps.size()) + "\n";
             SpannableStringBuilder ssb = new SpannableStringBuilder(sp);
+            ssb.append(textView.getText());
             Drawable dr = new BitmapDrawable(getResources(), mutableBitmap);
             dr.setBounds(
                     0,
@@ -193,11 +194,11 @@ public class ScrollingActivity extends AppCompatActivity {
             ImageSpan isp = new ImageSpan(dr);
             ssb.setSpan(
                     isp,
-                    sp.length()-2,
-                    sp.length()-1,
+                    0,
+                    1,
                     Spannable.SPAN_INCLUSIVE_INCLUSIVE
             );
-            textView.append(ssb);
+            textView.setText(ssb);
 
             Snackbar.make(fab, "picture added", Snackbar.LENGTH_LONG).setAction("Action", null).show();
         }
