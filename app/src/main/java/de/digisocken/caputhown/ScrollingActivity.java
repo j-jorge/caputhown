@@ -6,6 +6,7 @@ import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
@@ -32,11 +33,15 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Locale;
 
 public class ScrollingActivity extends AppCompatActivity {
     private static final int CAMERA_REQUEST = 1888;
     private ArrayList<Bitmap> bmps;
     private FloatingActionButton fab;
+
+    // todo
+    private boolean highRes = false;
 
     String mCurrentPhotoPath;
 
@@ -55,26 +60,31 @@ public class ScrollingActivity extends AppCompatActivity {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                String timeStamp = new SimpleDateFormat("yyyyMMddHHmmss").format(new Date());
-                File storageDir = getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS);
-                File image;
-                try {
-                    image = File.createTempFile(
-                            timeStamp,
-                            ".jpg",
-                            storageDir
-                    );
-                    mCurrentPhotoPath = image.getAbsolutePath();
 
-                    Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                    if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
-                        if (image != null) {
+                try {
+                    if (highRes) {
+                        String timeStamp = new SimpleDateFormat("yyyyMMddHHmmss", Locale.ENGLISH).format(new Date());
+                        File storageDir = getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS);
+                        File image = File.createTempFile(
+                                timeStamp,
+                                ".jpg",
+                                storageDir
+                        );
+                        mCurrentPhotoPath = image.getAbsolutePath();
+
+                        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                        if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
                             Uri photoURI = FileProvider.getUriForFile(getApplicationContext(),
                                     "de.digisocken.caputhown.fileprovider",
                                     image
                             );
                             // todo: use this high res picture
-                            //takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
+                            takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
+                            startActivityForResult(takePictureIntent, CAMERA_REQUEST);
+                        }
+                    } else {
+                        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                        if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
                             startActivityForResult(takePictureIntent, CAMERA_REQUEST);
                         }
                     }
@@ -97,8 +107,18 @@ public class ScrollingActivity extends AppCompatActivity {
         int id = item.getItemId();
 
         if (id == R.id.action_movie) {
-            FileChannelWrapper out = null;
+            textView.setText("processing...");
+            new ToMovieTask().execute();
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
 
+    private class ToMovieTask extends AsyncTask<Void, Void, Boolean>{
+
+        @Override
+        protected Boolean doInBackground(Void... voids) {
+            FileChannelWrapper out = null;
             File file = null;
             if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.KITKAT) {
                 file = new File(
@@ -115,6 +135,7 @@ public class ScrollingActivity extends AppCompatActivity {
                 file = new File(path);
                 if (!file.exists()) file.createNewFile();
             } catch (Exception e) {
+                return false;
             }
 
             try {
@@ -126,14 +147,26 @@ public class ScrollingActivity extends AppCompatActivity {
                 encoder.finish();
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
+                return false;
             } catch (IOException e) {
                 e.printStackTrace();
+                return false;
             } finally {
                 NIOUtils.closeQuietly(out);
             }
             return true;
         }
-        return super.onOptionsItemSelected(item);
+
+        @Override
+        protected void onPostExecute(Boolean aBoolean) {
+            if (aBoolean) {
+                textView.setText("Ok");
+                bmps.clear();
+            } else {
+                textView.setText("fail");
+            }
+            super.onPostExecute(aBoolean);
+        }
     }
 
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {

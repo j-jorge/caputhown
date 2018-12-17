@@ -7,7 +7,19 @@ Select **create** from the options menu!!
 
 ## Get the App
 
-- for Android 4.4+ [APK file](https://gitlab.com/deadlockz/caputhown/raw/master/app/release/de.digisocken.caputhown.apk)
+For Android 4.4+ use [APK file](https://gitlab.com/deadlockz/caputhown/raw/master/app/release/de.digisocken.caputhown.apk).
+
+## Examples
+
+mp4 was converted to gif:
+
+![Whiteboard agression](example2.gif)
+
+![Plain eating](example1.gif)
+
+![Cat rotation](example3.gif)
+
+![Mega zoom](example4.gif)
 
 ## License
 
