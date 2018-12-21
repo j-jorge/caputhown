@@ -3,6 +3,7 @@
 Makes small preview images and generate a mp4 file in `Documents/de.digisocken.caputhown/` folder.
 Select **create** from the options menu!!
 
+
 ![Layout](app/src/main/res/mipmap-xxxhdpi/ic_launcher.png)
 
 ## Get the App

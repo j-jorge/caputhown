@@ -3,25 +3,20 @@ package de.digisocken.caputhown;
 import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v4.content.FileProvider;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
-import android.text.Spannable;
-import android.text.SpannableStringBuilder;
-import android.text.style.ImageSpan;
-import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
+
 import org.jcodec.api.android.AndroidSequenceEncoder;
 import org.jcodec.common.io.FileChannelWrapper;
 import org.jcodec.common.io.NIOUtils;
@@ -31,38 +26,47 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.Locale;
 
 public class ScrollingActivity extends AppCompatActivity {
     private static final int CAMERA_REQUEST = 1888;
-    private ArrayList<Bitmap> bmps;
-    private FloatingActionButton fab;
+    private ActionBar ab = null;
 
     // todo
     private boolean highRes = false;
 
     String mCurrentPhotoPath;
 
-    private TextView textView;
+    private EntryAdapter entryAdapter;
+    private ListView entryList;
+    public static int data_total = 1;
+    public static int data_line = 0;
+    private TextView emptyView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        bmps = new ArrayList<>();
         setContentView(R.layout.activity_scrolling);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-        textView = (TextView) findViewById(R.id.largeText);
 
-        fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                takePic();
+        try {
+            ab = getSupportActionBar();
+            if (ab != null) {
+                ab.setDisplayShowHomeEnabled(true);
+                ab.setHomeButtonEnabled(true);
+                ab.setDisplayUseLogoEnabled(true);
+                ab.setLogo(R.mipmap.ic_launcher);
+                ab.setTitle("  " + getString(R.string.app_name));
             }
-        });
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        entryList = (ListView) findViewById(R.id.picList);
+        entryAdapter = new EntryAdapter(this);
+        emptyView = (TextView) findViewById(android.R.id.empty);
+        entryList.setEmptyView(emptyView);
+        entryList.setAdapter(entryAdapter);
     }
 
     private void takePic() {
@@ -110,8 +114,19 @@ public class ScrollingActivity extends AppCompatActivity {
         int id = item.getItemId();
 
         if (id == R.id.action_movie) {
-            textView.setText("processing...");
-            new ToMovieTask().execute();
+            entryAdapter.sort();
+            if (ab != null) ab.setTitle(R.string.processing);
+            new ToMovieTask().execute(false);
+            return true;
+        } else if (id == R.id.action_amovie) {
+            entryAdapter.asort();
+            if (ab != null) ab.setTitle(R.string.processing);
+            new ToMovieTask().execute(false);
+            return true;
+        } else if (id == R.id.action_rapmovie) {
+            entryAdapter.sort();
+            if (ab != null) ab.setTitle(R.string.processing);
+            new ToMovieTask().execute(true);
             return true;
         } else if (id == R.id.action_picture) {
             takePic();
@@ -120,10 +135,10 @@ public class ScrollingActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    private class ToMovieTask extends AsyncTask<Void, Void, Boolean>{
+    private class ToMovieTask extends AsyncTask<Boolean, Void, Boolean>{
 
         @Override
-        protected Boolean doInBackground(Void... voids) {
+        protected Boolean doInBackground(Boolean... bools) {
             FileChannelWrapper out = null;
             File file = null;
             if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.KITKAT) {
@@ -147,9 +162,19 @@ public class ScrollingActivity extends AppCompatActivity {
             try {
                 out = NIOUtils.writableFileChannel(file.getAbsolutePath());
                 AndroidSequenceEncoder encoder = new AndroidSequenceEncoder(out, Rational.R(15, 1));
-                for (Bitmap bitmap : bmps) {
-                    encoder.encodeImage(bitmap);
+                if (bools[0]) entryAdapter.sort();
+
+                for (PicEntry pe : entryAdapter.picEntries) {
+                    encoder.encodeImage(pe.pic);
                 }
+
+                if (bools[0]) {
+                    entryAdapter.asort();
+                    for (PicEntry pe : entryAdapter.picEntries) {
+                        encoder.encodeImage(pe.pic);
+                    }
+                }
+
                 encoder.finish();
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
@@ -165,48 +190,43 @@ public class ScrollingActivity extends AppCompatActivity {
 
         @Override
         protected void onPostExecute(Boolean aBoolean) {
+            if (ab != null) {
+                ab.setTitle("  " + getString(R.string.app_name));
+            }
             if (aBoolean) {
-                textView.setText("Ok");
-                bmps.clear();
+                emptyView.setText(R.string.ok);
+                entryAdapter.clear();
+                data_line = 0;
+                entryAdapter.notifyDataSetChanged();
             } else {
-                textView.setText("fail");
+                emptyView.setText(R.string.fail);
+                entryAdapter.clear();
+                data_line = 0;
+                entryAdapter.notifyDataSetChanged();
             }
             super.onPostExecute(aBoolean);
         }
     }
 
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+
         if (requestCode == CAMERA_REQUEST && resultCode == Activity.RESULT_OK) {
+            PicEntry pe = new PicEntry();
+            pe.title = String.format("%03d", data_line+1);
+
             Bitmap photo = (Bitmap) data.getExtras().get("data");
-            Bitmap mutableBitmap = Bitmap.createScaledBitmap(
+            pe.pic = Bitmap.createScaledBitmap(
                     photo,
                     2*photo.getWidth(),
                     2*photo.getHeight(),
                     true
             );
-            bmps.add(mutableBitmap);
+            entryAdapter.addItem(pe);
+            data_line++;
+            entryAdapter.asort();
+            entryAdapter.notifyDataSetChanged();
 
-            CharSequence sp = "  " + Integer.toString(bmps.size()) + "\n";
-            SpannableStringBuilder ssb = new SpannableStringBuilder(sp);
-            ssb.append(textView.getText());
-            Drawable dr = new BitmapDrawable(getResources(), mutableBitmap);
-            dr.setBounds(
-                    0,
-                    0,
-                    mutableBitmap.getWidth()/2,
-                    mutableBitmap.getHeight()/2
-            );
-
-            ImageSpan isp = new ImageSpan(dr);
-            ssb.setSpan(
-                    isp,
-                    0,
-                    1,
-                    Spannable.SPAN_INCLUSIVE_INCLUSIVE
-            );
-            textView.setText(ssb);
-
-            Snackbar.make(fab, "picture added", Snackbar.LENGTH_LONG).setAction("Action", null).show();
+            Toast.makeText(this, R.string.picadd, Toast.LENGTH_SHORT).show();
         }
     }
 }

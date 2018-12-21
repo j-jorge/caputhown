@@ -1,6 +1,12 @@
 <resources>
     <string name="app_name">CaPutHown</string>
     <string name="large_text">:o)  </string>
-    <string name="action_picture">take pic</string>
+    <string name="action_picture">take picture</string>
     <string name="action_movie">create MP4</string>
+    <string name="action_amovie">create reverse</string>
+    <string name="action_rapmovie">create loop</string>
+    <string name="fail">fail</string>
+    <string name="ok">Ok</string>
+    <string name="processing">processing...</string>
+    <string name="picadd">picture added</string>
 </resources>
