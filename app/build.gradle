@@ -6,8 +6,8 @@ android {
         applicationId "de.digisocken.caputhown"
         minSdkVersion 19
         targetSdkVersion 22
-        versionCode 3
-        versionName "0.3"
+        versionCode 4
+        versionName "0.4"
     }
     configurations.all {
         resolutionStrategy.force 'com.google.code.findbugs:jsr305:3.0.2'
@@ -30,4 +30,5 @@ dependencies {
     implementation 'com.android.support:appcompat-v7:28.0.0'
     implementation 'org.jcodec:jcodec:0.2.3'
     implementation 'org.jcodec:jcodec-android:0.2.3'
+    implementation 'com.writingminds:FFmpegAndroid:0.3.2'
 }

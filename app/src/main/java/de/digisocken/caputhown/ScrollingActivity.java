@@ -17,6 +17,12 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.github.hiteshsondhi88.libffmpeg.ExecuteBinaryResponseHandler;
+import com.github.hiteshsondhi88.libffmpeg.FFmpeg;
+import com.github.hiteshsondhi88.libffmpeg.LoadBinaryResponseHandler;
+import com.github.hiteshsondhi88.libffmpeg.exceptions.FFmpegCommandAlreadyRunningException;
+import com.github.hiteshsondhi88.libffmpeg.exceptions.FFmpegNotSupportedException;
+
 import org.jcodec.api.android.AndroidSequenceEncoder;
 import org.jcodec.common.io.FileChannelWrapper;
 import org.jcodec.common.io.NIOUtils;
@@ -32,6 +38,7 @@ import java.util.Locale;
 public class ScrollingActivity extends AppCompatActivity {
     private static final int CAMERA_REQUEST = 1888;
     private ActionBar ab = null;
+    private FFmpeg ffmpeg;
 
     // todo
     private boolean highRes = false;
@@ -67,6 +74,27 @@ public class ScrollingActivity extends AppCompatActivity {
         emptyView = (TextView) findViewById(android.R.id.empty);
         entryList.setEmptyView(emptyView);
         entryList.setAdapter(entryAdapter);
+
+        ffmpeg = FFmpeg.getInstance(this);
+        try {
+            ffmpeg.loadBinary(new LoadBinaryResponseHandler() {
+
+                @Override
+                public void onStart() {}
+
+                @Override
+                public void onFailure() {}
+
+                @Override
+                public void onSuccess() {}
+
+                @Override
+                public void onFinish() {}
+            });
+        } catch (FFmpegNotSupportedException e) {
+            // Handle if FFmpeg is not supported by device
+            e.printStackTrace();
+        }
     }
 
     private void takePic() {
@@ -150,7 +178,8 @@ public class ScrollingActivity extends AppCompatActivity {
                 file = new File(Environment.getExternalStorageDirectory() + "/Documents/"+getPackageName());
             }
 
-            String path = file.getPath() +"/"+ new SimpleDateFormat("yyyyMMddHHmmss").format(new Date())+".mp4";
+            String nameBasic = file.getPath() + "/" + (new SimpleDateFormat("yyyyMMddHHmmss")).format(new Date());
+            String path = nameBasic + ".mp4";
             try {
                 if (!file.exists()) file.mkdirs();
                 file = new File(path);
@@ -176,6 +205,21 @@ public class ScrollingActivity extends AppCompatActivity {
                 }
 
                 encoder.finish();
+
+                // ------------------------------------------------- makes an gif file
+                String[] cmdgif = {"-i", path, nameBasic + ".gif"};
+                conversion(cmdgif);
+                // ------------------------------------------------- makes whatsapp compatible file
+                String[] cmd_wa = {
+                        "-i", path,
+                        "-c:v", "libx264",
+                        "-profile:v", "baseline",
+                        "-level", "3.0",
+                        "-pix_fmt", "yuv420p",
+                        nameBasic + "whatsapp.mp4"
+                };
+                conversion(cmd_wa);
+
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
                 return false;
@@ -227,6 +271,33 @@ public class ScrollingActivity extends AppCompatActivity {
             entryAdapter.notifyDataSetChanged();
 
             Toast.makeText(this, R.string.picadd, Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private void conversion(String[] cmd) {
+
+        try {
+            // to execute "ffmpeg -version" command you just need to pass "-version"
+            ffmpeg.execute(cmd, new ExecuteBinaryResponseHandler() {
+
+                @Override
+                public void onStart() { }
+
+                @Override
+                public void onProgress(String message) { }
+
+                @Override
+                public void onFailure(String message) { }
+
+                @Override
+                public void onSuccess(String message) { }
+
+                @Override
+                public void onFinish() { }
+            });
+        } catch (FFmpegCommandAlreadyRunningException e) {
+            // Handle if FFmpeg is already running
+            e.printStackTrace();
         }
     }
 }

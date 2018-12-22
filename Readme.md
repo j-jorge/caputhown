@@ -1,10 +1,12 @@
 # Ca Put Hown (Kaputt hauen)
 
+![Layout](app/src/main/res/mipmap-xxxhdpi/ic_launcher.png)
+
 Makes small preview images and generate a mp4 file in `Documents/de.digisocken.caputhown/` folder.
 Select **create** from the options menu!!
 
-
-![Layout](app/src/main/res/mipmap-xxxhdpi/ic_launcher.png)
+- and tries to build gif
+- and a whatsapp compatible mp4
 
 ## Get the App
 
