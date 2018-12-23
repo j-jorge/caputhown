@@ -6,7 +6,9 @@
     <string name="action_amovie">create reverse</string>
     <string name="action_rapmovie">create loop</string>
     <string name="fail">fail</string>
+    <string name="mpg_fail">ffmpeg fail</string>
     <string name="ok">Ok</string>
     <string name="processing">processing...</string>
     <string name="picadd">picture added</string>
+    <string name="no_support">Gif and Whatsapp compatible video will not work :-(</string>
 </resources>

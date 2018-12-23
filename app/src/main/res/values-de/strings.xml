@@ -3,11 +3,13 @@
     <string name="app_name">CaPutHown</string>
     <string name="ok">fertig</string>
     <string name="fail">Mist!</string>
-    <string name="action_rapmovie">hin &amp; her</string>
+    <string name="mpg_fail">ffmpeg schlug fehl</string>
     <string name="large_text">:o)</string>
     <string name="action_picture">Bild machen</string>
     <string name="processing">verarbeite...</string>
     <string name="picadd">Bild hinzugefügt</string>
     <string name="action_movie">MP4 machen</string>
     <string name="action_amovie">umgekehrt machen</string>
+    <string name="action_rapmovie">hin &amp; her</string>
+    <string name="no_support">Gif- und Whatsapp-kompatible Video wird nicht gehen :-(</string>
 </resources>

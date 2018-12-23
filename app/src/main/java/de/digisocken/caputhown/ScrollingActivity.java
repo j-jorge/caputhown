@@ -38,7 +38,7 @@ import java.util.Locale;
 public class ScrollingActivity extends AppCompatActivity {
     private static final int CAMERA_REQUEST = 1888;
     private ActionBar ab = null;
-    private FFmpeg ffmpeg;
+    private FFmpeg ffmpeg = null;
 
     // todo
     private boolean highRes = false;
@@ -93,7 +93,8 @@ public class ScrollingActivity extends AppCompatActivity {
             });
         } catch (FFmpegNotSupportedException e) {
             // Handle if FFmpeg is not supported by device
-            e.printStackTrace();
+            emptyView.setText(R.string.no_support);
+            ffmpeg = null;
         }
     }
 
@@ -206,20 +207,6 @@ public class ScrollingActivity extends AppCompatActivity {
 
                 encoder.finish();
 
-                // ------------------------------------------------- makes an gif file
-                String[] cmdgif = {"-i", path, nameBasic + ".gif"};
-                conversion(cmdgif);
-                // ------------------------------------------------- makes whatsapp compatible file
-                String[] cmd_wa = {
-                        "-i", path,
-                        "-c:v", "libx264",
-                        "-profile:v", "baseline",
-                        "-level", "3.0",
-                        "-pix_fmt", "yuv420p",
-                        nameBasic + "whatsapp.mp4"
-                };
-                conversion(cmd_wa);
-
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
                 return false;
@@ -228,6 +215,23 @@ public class ScrollingActivity extends AppCompatActivity {
                 return false;
             } finally {
                 NIOUtils.closeQuietly(out);
+
+                if (ffmpeg != null) {
+                    // ------------------------------------------------- makes a gif file
+                    String[] cmdgif = {"-i", path, nameBasic + ".gif"};
+                    conversion(cmdgif, false);
+                    // ------------------------------------------------- makes whatsapp compatible file
+                    String[] cmd_wa = {
+                            "-i", path,
+                            "-c:v", "libx264",
+                            "-profile:v", "baseline",
+                            "-level", "3.0",
+                            "-pix_fmt", "yuv420p",
+                            nameBasic + "whatsapp.mp4"
+                    };
+                    conversion(cmd_wa, true);
+                }
+
             }
             return true;
         }
@@ -274,7 +278,8 @@ public class ScrollingActivity extends AppCompatActivity {
         }
     }
 
-    private void conversion(String[] cmd) {
+    private void conversion(final String[] cmd, final boolean delFinal) {
+        ;
 
         try {
             // to execute "ffmpeg -version" command you just need to pass "-version"
@@ -287,10 +292,25 @@ public class ScrollingActivity extends AppCompatActivity {
                 public void onProgress(String message) { }
 
                 @Override
-                public void onFailure(String message) { }
+                public void onFailure(String message) {
+                    emptyView.setText(R.string.fail);
+                    entryAdapter.clear();
+                    data_line = 0;
+                    entryAdapter.notifyDataSetChanged();
+                }
 
                 @Override
-                public void onSuccess(String message) { }
+                public void onSuccess(String message) {
+                    if (delFinal) {
+                        String path = cmd[1];
+                        File f = new File(path);
+                        try {
+                            f.getCanonicalFile().delete();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
 
                 @Override
                 public void onFinish() { }
