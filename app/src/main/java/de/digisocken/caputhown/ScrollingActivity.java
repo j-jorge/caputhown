@@ -145,17 +145,22 @@ public class ScrollingActivity extends AppCompatActivity {
         if (id == R.id.action_movie) {
             entryAdapter.sort();
             if (ab != null) ab.setTitle(R.string.processing);
-            new ToMovieTask().execute(false);
+            new ToMovieTask().execute(false, false);
             return true;
         } else if (id == R.id.action_amovie) {
             entryAdapter.asort();
             if (ab != null) ab.setTitle(R.string.processing);
-            new ToMovieTask().execute(false);
+            new ToMovieTask().execute(false, false);
+            return true;
+        } else if (id == R.id.action_slow) {
+            entryAdapter.sort();
+            if (ab != null) ab.setTitle(R.string.processing);
+            new ToMovieTask().execute(false, true);
             return true;
         } else if (id == R.id.action_rapmovie) {
             entryAdapter.sort();
             if (ab != null) ab.setTitle(R.string.processing);
-            new ToMovieTask().execute(true);
+            new ToMovieTask().execute(true, false);
             return true;
         } else if (id == R.id.action_picture) {
             takePic();
@@ -191,7 +196,12 @@ public class ScrollingActivity extends AppCompatActivity {
 
             try {
                 out = NIOUtils.writableFileChannel(file.getAbsolutePath());
-                AndroidSequenceEncoder encoder = new AndroidSequenceEncoder(out, Rational.R(15, 1));
+                AndroidSequenceEncoder encoder = null;
+                if (bools[1]) {
+                    encoder = new AndroidSequenceEncoder(out, Rational.R(8, 1));
+                } else {
+                    encoder = new AndroidSequenceEncoder(out, Rational.R(13, 1));
+                }
                 if (bools[0]) entryAdapter.sort();
 
                 for (PicEntry pe : entryAdapter.picEntries) {

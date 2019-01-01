@@ -12,4 +12,5 @@
     <string name="action_amovie">umgekehrt machen</string>
     <string name="action_rapmovie">hin &amp; her</string>
     <string name="no_support">Gif- und Whatsapp-kompatible Video wird nicht gehen :-(</string>
+    <string name="fps">8 Bilder/Sekunde</string>
 </resources>
