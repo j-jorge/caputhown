@@ -270,6 +270,7 @@ public class ScrollingActivity extends AppCompatActivity {
 
         if (requestCode == CAMERA_REQUEST && resultCode == Activity.RESULT_OK) {
             PicEntry pe = new PicEntry();
+            pe.order = data_line+1;
             pe.title = String.format("%03d", data_line+1);
 
             Bitmap photo = (Bitmap) data.getExtras().get("data");

@@ -5,10 +5,12 @@ import android.os.Build;
 import android.support.v4.content.ContextCompat;
 import android.text.Html;
 import android.text.Spanned;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
+import android.widget.PopupMenu;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -19,7 +21,7 @@ import java.util.regex.Pattern;
 public class EntryAdapter extends BaseAdapter {
     public String squery;
     public ArrayList<PicEntry> picEntries = new ArrayList<>();
-    Activity activity;
+    private Activity activity;
 
     EntryAdapter(Activity context) {
         super();
@@ -69,10 +71,10 @@ public class EntryAdapter extends BaseAdapter {
     }
 
     @Override
-    public View getView(int i, View view, ViewGroup viewGroup) {
+    public View getView(final int i, View view, ViewGroup viewGroup) {
         view = activity.getLayoutInflater().inflate(R.layout.entry_line, viewGroup, false);
         TextView  tt = (TextView) view.findViewById(R.id.line_title);
-        ImageView iv = (ImageView) view.findViewById(R.id.line_pic);
+        final ImageView iv = (ImageView) view.findViewById(R.id.line_pic);
 
         tt.setText(picEntries.get(i).title);
         iv.setImageBitmap(picEntries.get(i).pic);
@@ -90,8 +92,49 @@ public class EntryAdapter extends BaseAdapter {
                     R.color.oddCol
             ));
         }
+        iv.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                final PopupMenu popup = new PopupMenu(activity, iv);
+                popup.getMenuInflater().inflate(R.menu.popup, popup.getMenu());
+                popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                    public boolean onMenuItemClick(MenuItem mitem) {
+                        int j = mitem.getItemId();
+                        if (j == R.id.action_up) {
+                            picEntries.get(i).order++;
+                            picEntries.get(i).title = String.format("%03d", picEntries.get(i).order);
+                            asort();
+                            notifyDataSetChanged();
+                            return true;
+                        }
+                        else if (j == R.id.action_del){
+                            picEntries.remove(i);
+                            picEntries.get(i).title = String.format("%03d", picEntries.get(i).order);
+                            ScrollingActivity.data_line--;
+                            asort();
+                            notifyDataSetChanged();
+                            return true;
+                        }
+                        else if (j == R.id.action_down) {
+                            picEntries.get(i).order--;
+                            picEntries.get(i).title = String.format("%03d", picEntries.get(i).order);
+                            asort();
+                            notifyDataSetChanged();
+                            return true;
+                        } else {
+                            return onMenuItemClick(mitem);
+                        }
+                    }
+                });
+
+                popup.show();
+            }
+        });
+
         return view;
     }
+
+
 
 
     public void asort() {
@@ -99,10 +142,10 @@ public class EntryAdapter extends BaseAdapter {
         Collections.sort(picEntries, new Comparator<PicEntry>() {
             @Override
             public int compare(PicEntry f1, PicEntry f2) {
-                String s1 = f1.title;
-                String s2 = f2.title;
+                int s1 = f1.order;
+                int s2 = f2.order;
 
-                return s2.compareTo(s1);
+                return s2-s1;
             }
         });
     }
@@ -112,10 +155,10 @@ public class EntryAdapter extends BaseAdapter {
         Collections.sort(picEntries, new Comparator<PicEntry>() {
             @Override
             public int compare(PicEntry f1, PicEntry f2) {
-                String s1 = f1.title;
-                String s2 = f2.title;
+                int s1 = f1.order;
+                int s2 = f2.order;
 
-                return s1.compareTo(s2);
+                return s1-s2;
             }
         });
     }

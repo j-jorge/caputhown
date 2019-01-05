@@ -13,4 +13,7 @@
     <string name="action_rapmovie">hin &amp; her</string>
     <string name="no_support">Gif- und Whatsapp-kompatible Video wird nicht gehen :-(</string>
     <string name="fps">8 Bilder/Sekunde</string>
+    <string name="up">rauf</string>
+    <string name="delete">entfernen</string>
+    <string name="down">runter</string>
 </resources>
