@@ -5,8 +5,9 @@
 Makes small preview images and generate a mp4 file in `Documents/de.digisocken.caputhown/` folder.
 Select **create** from the options menu!!
 
-- and tries to build gif
-- and a whatsapp compatible mp4
+- build gif
+- tries to build a whatsapp compatible mp4
+- delete or reorder images
 
 ## Get the App
 

@@ -106,16 +106,13 @@ public class EntryAdapter extends BaseAdapter {
                             asort();
                             notifyDataSetChanged();
                             return true;
-                        }
-                        else if (j == R.id.action_del){
+                        } else if (j == R.id.action_del){
                             picEntries.remove(i);
-                            picEntries.get(i).title = String.format("%03d", picEntries.get(i).order);
                             ScrollingActivity.data_line--;
                             asort();
                             notifyDataSetChanged();
                             return true;
-                        }
-                        else if (j == R.id.action_down) {
+                        } else if (j == R.id.action_down) {
                             picEntries.get(i).order--;
                             picEntries.get(i).title = String.format("%03d", picEntries.get(i).order);
                             asort();

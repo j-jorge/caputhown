@@ -6,8 +6,8 @@ android {
         applicationId "de.digisocken.caputhown"
         minSdkVersion 19
         targetSdkVersion 22
-        versionCode 7
-        versionName "0.7"
+        versionCode 8
+        versionName "0.8"
     }
     configurations.all {
         resolutionStrategy.force 'com.google.code.findbugs:jsr305:3.0.2'
