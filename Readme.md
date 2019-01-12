@@ -10,7 +10,7 @@ Makes small preview images and generates a mp4 file and gif in the `Documents/de
 
 ## Get the App
 
-For Android 4.4+ use [APK file](https://gitlab.com/deadlockz/caputhown/raw/master/app/release/de.digisocken.stop-o-moto.apk).
+For Android 4.4+ use [APK file](https://gitlab.com/deadlockz/caputhown/raw/master/app/release/de.digisocken.stop_o_moto.apk).
 
 ## Examples
 
