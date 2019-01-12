@@ -1,9 +1,9 @@
-# Ca Put Hown (Kaputt hauen)
+# Stop-o-Moto
 
 ![Layout](app/src/main/res/mipmap-xxxhdpi/ic_launcher.png)
 
-Makes small preview images and generate a mp4 file in `Documents/de.digisocken.caputhown/` folder.
-Select **create** from the options menu!!
+Makes small preview images and generate a mp4 file in `Documents/de.digisocken.stop-o-moto/` folder.
+Select export from the options menu!!
 
 - build gif
 - tries to build a whatsapp compatible mp4
@@ -11,7 +11,7 @@ Select **create** from the options menu!!
 
 ## Get the App
 
-For Android 4.4+ use [APK file](https://gitlab.com/deadlockz/caputhown/raw/master/app/release/de.digisocken.caputhown.apk).
+For Android 4.4+ use [APK file](https://gitlab.com/deadlockz/caputhown/raw/master/app/release/de.digisocken.stop-o-moto.apk).
 
 ## Examples
 

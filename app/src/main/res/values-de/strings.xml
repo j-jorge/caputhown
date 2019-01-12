@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">CaPutHown</string>
+    <string name="app_name">Stop-o-Moto</string>
     <string name="ok">fertig</string>
     <string name="fail">Mist!</string>
     <string name="mpg_fail">ffmpeg schlug fehl</string>
