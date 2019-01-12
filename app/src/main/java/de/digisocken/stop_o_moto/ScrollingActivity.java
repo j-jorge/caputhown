@@ -37,16 +37,19 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public class ScrollingActivity extends AppCompatActivity {
-    private static final int CAMERA_REQUEST = 1888;
+    private static final String PROJECT_LINK = "https://gitlab.com/deadlockz/caputhown/blob/master/Readme.md";
+    private static final int CAMERA_REQUEST = 4711;
     public static String PACKAGE_NAME;
     private ActionBar ab = null;
     private FFmpeg ffmpeg = null;
 
-    // todo
-    private boolean highRes = true;
+    private boolean optHigh = false;
+    private boolean optSlow = false;
+
+    private boolean optAmovie = false;
+    private boolean optRap = false;
 
     private EntryAdapter entryAdapter;
-    private ListView entryList;
     private TextView emptyView;
 
     @Override
@@ -68,7 +71,7 @@ public class ScrollingActivity extends AppCompatActivity {
             e.printStackTrace();
         }
 
-        entryList = (ListView) findViewById(R.id.picList);
+        ListView entryList = (ListView) findViewById(R.id.picList);
         entryAdapter = new EntryAdapter(this);
         emptyView = (TextView) findViewById(android.R.id.empty);
         entryList.setEmptyView(emptyView);
@@ -98,17 +101,7 @@ public class ScrollingActivity extends AppCompatActivity {
     }
 
     private void takePic() {
-        if (highRes) {
-            /*
-            String timeStamp = new SimpleDateFormat("yyyyMMddHHmmss", Locale.ENGLISH).format(new Date());
-            File storageDir = getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS);
-            File image = File.createTempFile(
-                    timeStamp,
-                    ".jpg",
-                    storageDir
-            );
-            mCurrentPhotoPath = image.getAbsolutePath();
-            */
+        if (optHigh) {
             File image = createAppFile("_temp.jpg");
 
             Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
@@ -141,24 +134,55 @@ public class ScrollingActivity extends AppCompatActivity {
         int id = item.getItemId();
 
         if (id == R.id.action_movie) {
-            entryAdapter.sort();
+
             if (ab != null) ab.setTitle(R.string.processing);
-            new ToMovieTask().execute(false, false);
+            if (optAmovie) {
+                entryAdapter.asort();
+            } else {
+                entryAdapter.sort();
+            }
+            new ToMovieTask().execute(optRap, optSlow);
             return true;
+
         } else if (id == R.id.action_amovie) {
-            entryAdapter.asort();
-            if (ab != null) ab.setTitle(R.string.processing);
-            new ToMovieTask().execute(false, false);
+            if (item.isChecked()) {
+                item.setChecked(false);
+                optAmovie = false;
+            } else {
+                item.setChecked(true);
+                optAmovie = true;
+            }
             return true;
         } else if (id == R.id.action_slow) {
-            entryAdapter.sort();
-            if (ab != null) ab.setTitle(R.string.processing);
-            new ToMovieTask().execute(false, true);
+            if (item.isChecked()) {
+                item.setChecked(false);
+                optSlow = false;
+            } else {
+                item.setChecked(true);
+                optSlow = true;
+            }
             return true;
         } else if (id == R.id.action_rapmovie) {
-            entryAdapter.sort();
-            if (ab != null) ab.setTitle(R.string.processing);
-            new ToMovieTask().execute(true, false);
+            if (item.isChecked()) {
+                item.setChecked(false);
+                optRap = false;
+            } else {
+                item.setChecked(true);
+                optRap = true;
+            }
+            return true;
+        } else if (id == R.id.action_high) {
+            if (item.isChecked()) {
+                item.setChecked(false);
+                optHigh = false;
+            } else {
+                item.setChecked(true);
+                optHigh = true;
+            }
+            return true;
+        } else if (id == R.id.action_info) {
+            Intent intentProj = new Intent(Intent.ACTION_VIEW, Uri.parse(PROJECT_LINK));
+            startActivity(intentProj);
             return true;
         } else if (id == R.id.action_picture) {
             takePic();
@@ -253,7 +277,7 @@ public class ScrollingActivity extends AppCompatActivity {
             pe.order = entryAdapter.getCount();
             pe.title = String.format("%03d", pe.order);
 
-            if (highRes) {
+            if (optHigh) {
                 Bitmap photo = BitmapFactory.decodeFile(
                         getAppFolder().getPath() + "/_temp.jpg"
                 );

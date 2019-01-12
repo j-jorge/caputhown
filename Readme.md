@@ -2,12 +2,11 @@
 
 ![Layout](app/src/main/res/mipmap-xxxhdpi/ic_launcher.png)
 
-Makes small preview images and generate a mp4 file in `Documents/de.digisocken.stop-o-moto/` folder.
-Select export from the options menu!!
+Makes small preview images and generates a mp4 file and gif in the `Documents/de.digisocken.stop-o-moto/` folder.
 
 - build gif
 - tries to build a whatsapp compatible mp4
-- delete or reorder images
+- delete or reorder images (tab on image to get option dialog)
 
 ## Get the App
 
@@ -15,15 +14,13 @@ For Android 4.4+ use [APK file](https://gitlab.com/deadlockz/caputhown/raw/maste
 
 ## Examples
 
-mp4 was converted to gif:
-
 ![Whiteboard agression](example2.gif)
 
 ![Plain eating](example1.gif)
 
 ![Cat rotation](example3.gif)
 
-![Mega zoom](example4.gif)
+![the bomb dislikes fire](example4.gif)
 
 ## License
 
