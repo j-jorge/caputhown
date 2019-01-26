@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Stop-o-Moto</string>
-    <string name="ok">fertig: Videodatei ist in Dokumente/de.digisocken.stop-o-moto/ abgelegt</string>
+    <string name="ok">fertig: Videodatei ist in Dokumente/de.digisocken.stop-o-moto/ abgelegt.\n\nDu kannst nun den share Button nutzen.</string>
     <string name="fail">Mist!</string>
     <string name="mpg_fail">ffmpeg schlug fehl</string>
     <string name="large_text">:o)   </string>
@@ -15,6 +15,7 @@
     <string name="action_high">hohe Qualität</string>
     <string name="action_info">Info Webseite</string>
     <string name="action_movie">Video erzeugen!</string>
+    <string name="action_share">teilen…</string>
 
     <string name="no_support">Gif- und Whatsapp-kompatible Video wird nicht gehen :-(</string>
     <string name="up">rauf</string>

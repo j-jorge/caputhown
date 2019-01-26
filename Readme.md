@@ -8,7 +8,7 @@ Stop-o-Moto uses the open ffmpegAndroid lib to create compatible video files.
 
 - build gif
 - tries to build a whatsapp compatible mp4
-- delete or reorder images (tab on image to get option dialog)
+- delete images
 
 ## Get the App
 

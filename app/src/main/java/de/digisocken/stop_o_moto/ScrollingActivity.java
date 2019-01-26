@@ -33,6 +33,7 @@ import org.jcodec.common.model.Rational;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.net.URLConnection;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -51,6 +52,8 @@ public class ScrollingActivity extends AppCompatActivity {
 
     private EntryAdapter entryAdapter;
     private TextView emptyView;
+
+    private String shareFile = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -141,9 +144,22 @@ public class ScrollingActivity extends AppCompatActivity {
             } else {
                 entryAdapter.sort();
             }
+            shareFile = "";
             new ToMovieTask().execute(optRap, optSlow);
             return true;
 
+        } else if (id == R.id.action_share) {
+            if (shareFile.length() > 0) {
+                final Intent sharingIntent = new Intent(Intent.ACTION_SEND);
+                sharingIntent.setType("image/gif");
+                //sharingIntent.setType("video/mp4");
+                //sharingIntent.setType("text/plain");
+                //sharingIntent.putExtra(Intent.EXTRA_TEXT, "dbmnsbdm sjakdkasd");
+                //sharingIntent.putExtra(Intent.EXTRA_STREAM, Uri.parse("file://" + shareFile));
+                sharingIntent.putExtra(Intent.EXTRA_STREAM, Uri.parse(shareFile));
+                sharingIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                startActivity(Intent.createChooser(sharingIntent, getString(R.string.action_share)));
+            }
         } else if (id == R.id.action_amovie) {
             if (item.isChecked()) {
                 item.setChecked(false);
@@ -192,12 +208,14 @@ public class ScrollingActivity extends AppCompatActivity {
     }
 
     private class ToMovieTask extends AsyncTask<Boolean, Void, Boolean>{
+        private String nameBasic;
+        private File file;
 
         @Override
         protected Boolean doInBackground(Boolean... bools) {
             FileChannelWrapper out = null;
-            String nameBasic = (new SimpleDateFormat("yyyyMMddHHmmss")).format(new Date());
-            File file = createAppFile(nameBasic + ".mp4");
+            nameBasic = (new SimpleDateFormat("yyyyMMddHHmmss")).format(new Date());
+            file = createAppFile(nameBasic + ".mp4");
 
             try {
                 out = NIOUtils.writableFileChannel(file.getAbsolutePath());
@@ -259,10 +277,12 @@ public class ScrollingActivity extends AppCompatActivity {
             }
             if (aBoolean) {
                 emptyView.setText(R.string.ok);
+                shareFile = file.getPath() + "/" + getAppFolder().getPath() + "/" + nameBasic + ".gif";
                 entryAdapter.clear();
                 entryAdapter.notifyDataSetChanged();
             } else {
                 emptyView.setText(R.string.fail);
+                shareFile = "";
                 entryAdapter.clear();
                 entryAdapter.notifyDataSetChanged();
             }

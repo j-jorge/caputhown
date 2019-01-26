@@ -83,6 +83,17 @@ public class EntryAdapter extends BaseAdapter {
                         int j = mitem.getItemId();
                         int id = picEntries.size() -i-1;
                         Log.d("index", Integer.toString(id));
+
+                        if (j == R.id.action_del){
+                            picEntries.remove(i);
+                            asort();
+                            notifyDataSetChanged();
+                            return true;
+                        } else {
+                            return onMenuItemClick(mitem);
+                        }
+
+                        /*
                         if (j == R.id.action_up) {
                             if (i==0) return true;
                             for (int x=0; x<picEntries.size(); x++) {
@@ -96,11 +107,6 @@ public class EntryAdapter extends BaseAdapter {
                             for (int x=0; x<picEntries.size(); x++) {
                                 Log.d("Aftersort", picEntries.get(x).title);
                             }
-                            notifyDataSetChanged();
-                            return true;
-                        } else if (j == R.id.action_del){
-                            picEntries.remove(i);
-                            asort();
                             notifyDataSetChanged();
                             return true;
                         } else if (j == R.id.action_down) {
@@ -118,9 +124,8 @@ public class EntryAdapter extends BaseAdapter {
                             }
                             notifyDataSetChanged();
                             return true;
-                        } else {
-                            return onMenuItemClick(mitem);
                         }
+                        */
                     }
                 });
 

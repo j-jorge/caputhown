@@ -3,6 +3,13 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="de.digisocken.stop_o_moto.ScrollingActivity">
     <item
+        android:id="@+id/action_share"
+        android:orderInCategory="100"
+        android:icon="@mipmap/share"
+        android:title="@string/action_share"
+        app:showAsAction="always" />
+
+    <item
         android:id="@+id/action_picture"
         android:orderInCategory="100"
         android:icon="@mipmap/camera"
