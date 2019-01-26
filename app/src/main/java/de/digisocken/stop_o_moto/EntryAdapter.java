@@ -2,6 +2,7 @@ package de.digisocken.stop_o_moto;
 
 import android.app.Activity;
 import android.support.v4.content.ContextCompat;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -9,6 +10,8 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.PopupMenu;
 import android.widget.TextView;
+
+import org.jcodec.containers.mp4.boxes.CompositionOffsetsBox;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -78,11 +81,21 @@ public class EntryAdapter extends BaseAdapter {
                 popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
                     public boolean onMenuItemClick(MenuItem mitem) {
                         int j = mitem.getItemId();
+                        int id = picEntries.size() -i-1;
+                        Log.d("index", Integer.toString(id));
                         if (j == R.id.action_up) {
                             if (i==0) return true;
-                            upOrder(i);
-                            picEntries.get(i).title = String.format("%03d", picEntries.get(i).order);
+                            for (int x=0; x<picEntries.size(); x++) {
+                                Log.d("Before", picEntries.get(x).title);
+                            }
+                            upOrder(id);
+                            for (int x=0; x<picEntries.size(); x++) {
+                                Log.d("After", picEntries.get(x).title);
+                            }
                             asort();
+                            for (int x=0; x<picEntries.size(); x++) {
+                                Log.d("Aftersort", picEntries.get(x).title);
+                            }
                             notifyDataSetChanged();
                             return true;
                         } else if (j == R.id.action_del){
@@ -91,10 +104,18 @@ public class EntryAdapter extends BaseAdapter {
                             notifyDataSetChanged();
                             return true;
                         } else if (j == R.id.action_down) {
-                            if (i==(picEntries.size()-1)) return true;
-                            downOrder(i);
-                            picEntries.get(i).title = String.format("%03d", picEntries.get(i).order);
+                            if (id==0) return true;
+                            for (int x=0; x<picEntries.size(); x++) {
+                                Log.d("Before", picEntries.get(x).title);
+                            }
+                            downOrder(id);
+                            for (int x=0; x<picEntries.size(); x++) {
+                                Log.d("After", picEntries.get(x).title);
+                            }
                             asort();
+                            for (int x=0; x<picEntries.size(); x++) {
+                                Log.d("Aftersort", picEntries.get(x).title);
+                            }
                             notifyDataSetChanged();
                             return true;
                         } else {
@@ -110,23 +131,28 @@ public class EntryAdapter extends BaseAdapter {
         return view;
     }
 
-    private void upOrder(int oid) {
-        PicEntry p1 = picEntries.get(oid-1);
-        PicEntry p2 = picEntries.get(oid);
-        picEntries.set(oid, p1);
-        picEntries.set(oid-1, p2);
-        p1.order--;
-        p2.order++;
+    private void upOrder(int id) {
+        Collections.swap(picEntries, id, id+1);
+        PicEntry pe = picEntries.get(id);
+        pe.order++;
+        //pe.title = String.format("%03d", pe.order);
+
+        pe = picEntries.get(id+1);
+        pe.order--;
+        //pe.title = String.format("%03d", pe.order);
     }
 
-    private void downOrder(int oid) {
-        PicEntry p1 = picEntries.get(oid);
-        PicEntry p2 = picEntries.get(oid+1);
-        picEntries.set(oid+1, p1);
-        picEntries.set(oid, p2);
-        p1.order++;
-        p2.order--;
+    private void downOrder(int id) {
+        Collections.swap(picEntries, id, id-1);
+        PicEntry pe = picEntries.get(id);
+        pe.order--;
+        //pe.title = String.format("%03d", pe.order);
+
+        pe = picEntries.get(id-1);
+        pe.order++;
+        //pe.title = String.format("%03d", pe.order);
     }
+
 
 
     public void asort() {

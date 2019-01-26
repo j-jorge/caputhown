@@ -2,7 +2,9 @@
 
 ![Layout](app/src/main/res/mipmap-xxxhdpi/ic_launcher.png)
 
-Makes small preview images and generates a mp4 file and gif in the `Documents/de.digisocken.stop-o-moto/` folder.
+This simple app creates videos (MP4) and GIF files from several camera shots and stores them under ''Documents/de.digisocken.stop-o-moto/'' on your device.
+
+Stop-o-Moto uses the open ffmpegAndroid lib to create compatible video files.
 
 - build gif
 - tries to build a whatsapp compatible mp4
