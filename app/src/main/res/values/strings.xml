@@ -17,7 +17,4 @@
     <string name="processing">processing…</string>
     <string name="picadd">picture added</string>
     <string name="no_support">Gif and Whatsapp compatible video will not work :-(</string>
-    <string name="up">up</string>
-    <string name="delete">delete</string>
-    <string name="down">down</string>
 </resources>

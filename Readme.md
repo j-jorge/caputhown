@@ -8,7 +8,7 @@ Stop-o-Moto uses the open ffmpegAndroid lib to create compatible video files.
 
 - build gif
 - tries to build a whatsapp compatible mp4
-- delete images
+- delete and reorder images
 
 ## Get the App
 
@@ -24,7 +24,7 @@ For Android 4.4+ use [APK file](https://gitlab.com/deadlockz/caputhown/raw/maste
 
 ![the bomb dislikes fire](example4.gif)
 
-## License
+## License (my Code)
 
 This is free and unencumbered software released into the public domain.
 
@@ -46,6 +46,22 @@ ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 
 For more information, please refer to [http://unlicense.org](http://unlicense.org)
+
+## Licence (DragListView lib)
+
+Copyright 2014 Magnus Woxblom
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
 
 ## Privacy Policy
 

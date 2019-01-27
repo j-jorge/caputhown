@@ -1,187 +1,115 @@
 package de.digisocken.stop_o_moto;
 
 import android.app.Activity;
+import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
-import android.util.Log;
-import android.view.MenuItem;
+import android.util.Pair;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.BaseAdapter;
+import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.PopupMenu;
 import android.widget.TextView;
 
-import org.jcodec.containers.mp4.boxes.CompositionOffsetsBox;
+import com.woxthebox.draglistview.DragItemAdapter;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 
-public class EntryAdapter extends BaseAdapter {
-    public String squery;
-    public ArrayList<PicEntry> picEntries = new ArrayList<>();
+public class EntryAdapter extends DragItemAdapter<Pair<Long, PicEntry>, EntryAdapter.ViewHolder> {
+    private int mLayoutId;
+    private int mGrabHandleId;
+    private boolean mDragOnLongPress;
     private Activity activity;
 
-    EntryAdapter(Activity context) {
-        super();
-        squery = null;
+    EntryAdapter(Activity context, ArrayList<Pair<Long, PicEntry>> list, int layoutId, int grabHandleId, boolean dragOnLongPress) {
+        mLayoutId = layoutId;
+        mGrabHandleId = grabHandleId;
+        mDragOnLongPress = dragOnLongPress;
+        setItemList(list);
         activity = context;
     }
 
-    public void addItem(PicEntry item) {
-        picEntries.add(item);
+    @Override
+    public long getUniqueItemId(int position) {
+        return mItemList.get(position).first;
     }
 
-    public void clear() {
-        picEntries.clear();
+
+    @NonNull
+    @Override
+    public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        View view = LayoutInflater.from(parent.getContext()).inflate(mLayoutId, parent, false);
+        return new ViewHolder(view);
     }
 
     @Override
-    public int getCount() {
-        return picEntries.size();
-    }
+    public void onBindViewHolder(@NonNull ViewHolder holder, final int position) {
+        super.onBindViewHolder(holder, position);
 
-    @Override
-    public Object getItem(int i) {
-        return picEntries.get(i);
-    }
+        holder.tt.setText(mItemList.get(position).second.title);
+        holder.iv.setImageBitmap(mItemList.get(position).second.pic);
+        holder.iv.setMinimumHeight(mItemList.get(position).second.pic.getHeight());
+        holder.iv.setMinimumWidth(mItemList.get(position).second.pic.getWidth());
 
-    @Override
-    public long getItemId(int i) {
-        return i;
-    }
-
-    @Override
-    public View getView(final int i, View view, ViewGroup viewGroup) {
-        view = activity.getLayoutInflater().inflate(R.layout.entry_line, viewGroup, false);
-        TextView  tt = (TextView) view.findViewById(R.id.line_title);
-        final ImageView iv = (ImageView) view.findViewById(R.id.line_pic);
-
-        tt.setText(picEntries.get(i).title);
-        iv.setImageBitmap(picEntries.get(i).pic);
-        iv.setMinimumHeight(picEntries.get(i).pic.getHeight());
-        iv.setMinimumWidth(picEntries.get(i).pic.getWidth());
-
-        if (i%2==0) {
-            view.setBackgroundColor(ContextCompat.getColor(
+        if (position%2==0) {
+            holder.itemView.setBackgroundColor(ContextCompat.getColor(
                     activity.getApplicationContext(),
                     R.color.evenCol
             ));
         } else {
-            view.setBackgroundColor(ContextCompat.getColor(
+            holder.itemView.setBackgroundColor(ContextCompat.getColor(
                     activity.getApplicationContext(),
                     R.color.oddCol
             ));
         }
-        iv.setOnClickListener(new View.OnClickListener() {
+        holder.ib.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                final PopupMenu popup = new PopupMenu(activity, iv);
-                popup.getMenuInflater().inflate(R.menu.popup, popup.getMenu());
-                popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
-                    public boolean onMenuItemClick(MenuItem mitem) {
-                        int j = mitem.getItemId();
-                        int id = picEntries.size() -i-1;
-                        Log.d("index", Integer.toString(id));
-
-                        if (j == R.id.action_del){
-                            picEntries.remove(i);
-                            asort();
-                            notifyDataSetChanged();
-                            return true;
-                        } else {
-                            return onMenuItemClick(mitem);
-                        }
-
-                        /*
-                        if (j == R.id.action_up) {
-                            if (i==0) return true;
-                            for (int x=0; x<picEntries.size(); x++) {
-                                Log.d("Before", picEntries.get(x).title);
-                            }
-                            upOrder(id);
-                            for (int x=0; x<picEntries.size(); x++) {
-                                Log.d("After", picEntries.get(x).title);
-                            }
-                            asort();
-                            for (int x=0; x<picEntries.size(); x++) {
-                                Log.d("Aftersort", picEntries.get(x).title);
-                            }
-                            notifyDataSetChanged();
-                            return true;
-                        } else if (j == R.id.action_down) {
-                            if (id==0) return true;
-                            for (int x=0; x<picEntries.size(); x++) {
-                                Log.d("Before", picEntries.get(x).title);
-                            }
-                            downOrder(id);
-                            for (int x=0; x<picEntries.size(); x++) {
-                                Log.d("After", picEntries.get(x).title);
-                            }
-                            asort();
-                            for (int x=0; x<picEntries.size(); x++) {
-                                Log.d("Aftersort", picEntries.get(x).title);
-                            }
-                            notifyDataSetChanged();
-                            return true;
-                        }
-                        */
-                    }
-                });
-
-                popup.show();
+                removeItem(position);
+                notifyDataSetChanged();
             }
         });
 
-        return view;
+        holder.itemView.setTag(mItemList.get(position));
     }
 
-    private void upOrder(int id) {
-        Collections.swap(picEntries, id, id+1);
-        PicEntry pe = picEntries.get(id);
-        pe.order++;
-        //pe.title = String.format("%03d", pe.order);
+    class ViewHolder extends DragItemAdapter.ViewHolder {
+        TextView tt;
+        ImageView iv;
+        ImageButton ib;
 
-        pe = picEntries.get(id+1);
-        pe.order--;
-        //pe.title = String.format("%03d", pe.order);
+        ViewHolder(final View itemView) {
+            super(itemView, mGrabHandleId, mDragOnLongPress);
+            tt = itemView.findViewById(R.id.line_title);
+            iv = itemView.findViewById(R.id.line_pic);
+            ib = itemView.findViewById(R.id.line_trash);
+        }
     }
-
-    private void downOrder(int id) {
-        Collections.swap(picEntries, id, id-1);
-        PicEntry pe = picEntries.get(id);
-        pe.order--;
-        //pe.title = String.format("%03d", pe.order);
-
-        pe = picEntries.get(id-1);
-        pe.order++;
-        //pe.title = String.format("%03d", pe.order);
-    }
-
-
 
     public void asort() {
 
-        Collections.sort(picEntries, new Comparator<PicEntry>() {
+        Collections.sort(mItemList, new Comparator<Pair<Long,PicEntry>>() {
             @Override
-            public int compare(PicEntry f1, PicEntry f2) {
-                int s1 = f1.order;
-                int s2 = f2.order;
+            public int compare(Pair<Long,PicEntry> f1, Pair<Long,PicEntry> f2) {
+                long s1 = f1.first;
+                long s2 = f2.first;
 
-                return s2-s1;
+                return (int) (s2-s1);
             }
         });
     }
 
     public void sort() {
 
-        Collections.sort(picEntries, new Comparator<PicEntry>() {
+        Collections.sort(mItemList, new Comparator<Pair<Long,PicEntry>>() {
             @Override
-            public int compare(PicEntry f1, PicEntry f2) {
-                int s1 = f1.order;
-                int s2 = f2.order;
+            public int compare(Pair<Long,PicEntry> f1, Pair<Long,PicEntry> f2) {
+                long s1 = f1.first;
+                long s2 = f2.first;
 
-                return s1-s2;
+                return (int) (s1-s2);
             }
         });
     }

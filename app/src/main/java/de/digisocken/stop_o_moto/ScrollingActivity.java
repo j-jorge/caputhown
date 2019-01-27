@@ -1,9 +1,11 @@
 package de.digisocken.stop_o_moto;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -12,10 +14,16 @@ import android.provider.MediaStore;
 import android.support.v4.content.FileProvider;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
 import android.util.Log;
+import android.util.Pair;
+import android.view.ContextMenu;
 import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.widget.ListView;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -24,6 +32,8 @@ import com.github.hiteshsondhi88.libffmpeg.FFmpeg;
 import com.github.hiteshsondhi88.libffmpeg.LoadBinaryResponseHandler;
 import com.github.hiteshsondhi88.libffmpeg.exceptions.FFmpegCommandAlreadyRunningException;
 import com.github.hiteshsondhi88.libffmpeg.exceptions.FFmpegNotSupportedException;
+import com.woxthebox.draglistview.DragItem;
+import com.woxthebox.draglistview.DragListView;
 
 import org.jcodec.api.android.AndroidSequenceEncoder;
 import org.jcodec.common.io.FileChannelWrapper;
@@ -33,8 +43,8 @@ import org.jcodec.common.model.Rational;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.net.URLConnection;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 
 public class ScrollingActivity extends AppCompatActivity {
@@ -50,6 +60,7 @@ public class ScrollingActivity extends AppCompatActivity {
     private boolean optAmovie = false;
     private boolean optRap = false;
 
+    private ArrayList<Pair<Long, PicEntry>> picEntries;
     private EntryAdapter entryAdapter;
     private TextView emptyView;
 
@@ -74,25 +85,26 @@ public class ScrollingActivity extends AppCompatActivity {
             e.printStackTrace();
         }
 
-        ListView entryList = (ListView) findViewById(R.id.picList);
-        entryAdapter = new EntryAdapter(this);
+        DragListView entryList = (DragListView) findViewById(R.id.picList);
         emptyView = (TextView) findViewById(android.R.id.empty);
-        entryList.setEmptyView(emptyView);
-        entryList.setAdapter(entryAdapter);
+
+        picEntries = new ArrayList<>();
+        entryList.setLayoutManager(new LinearLayoutManager(this));
+        entryAdapter = new EntryAdapter(this, picEntries, R.layout.entry_line, R.id.line_title, false);
+        entryList.setAdapter(entryAdapter, true);
+        entryList.setCanDragHorizontally(false);
+        entryList.getRecyclerView().setVerticalScrollBarEnabled(true);
+        entryList.setCustomDragItem(new MyDragItem(this, R.layout.entry_line));
 
         ffmpeg = FFmpeg.getInstance(this);
         try {
             ffmpeg.loadBinary(new LoadBinaryResponseHandler() {
-
                 @Override
                 public void onStart() {}
-
                 @Override
                 public void onFailure() {}
-
                 @Override
                 public void onSuccess() {}
-
                 @Override
                 public void onFinish() {}
             });
@@ -113,7 +125,6 @@ public class ScrollingActivity extends AppCompatActivity {
                         "de.digisocken.stop_o_moto.fileprovider",
                         image
                 );
-                // todo: use this high res picture
                 takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
                 startActivityForResult(takePictureIntent, CAMERA_REQUEST);
             }
@@ -227,14 +238,14 @@ public class ScrollingActivity extends AppCompatActivity {
                 }
                 if (bools[0]) entryAdapter.sort();
 
-                for (PicEntry pe : entryAdapter.picEntries) {
-                    encoder.encodeImage(pe.pic);
+                for (Pair<Long, PicEntry> pe : picEntries) {
+                    encoder.encodeImage(pe.second.pic);
                 }
 
                 if (bools[0]) {
                     entryAdapter.asort();
-                    for (PicEntry pe : entryAdapter.picEntries) {
-                        encoder.encodeImage(pe.pic);
+                    for (Pair<Long, PicEntry> pe : picEntries) {
+                        encoder.encodeImage(pe.second.pic);
                     }
                 }
 
@@ -278,12 +289,12 @@ public class ScrollingActivity extends AppCompatActivity {
             if (aBoolean) {
                 emptyView.setText(R.string.ok);
                 shareFile = file.getPath() + "/" + getAppFolder().getPath() + "/" + nameBasic + ".gif";
-                entryAdapter.clear();
+                picEntries.clear();
                 entryAdapter.notifyDataSetChanged();
             } else {
                 emptyView.setText(R.string.fail);
                 shareFile = "";
-                entryAdapter.clear();
+                picEntries.clear();
                 entryAdapter.notifyDataSetChanged();
             }
             super.onPostExecute(aBoolean);
@@ -294,8 +305,8 @@ public class ScrollingActivity extends AppCompatActivity {
 
         if (requestCode == CAMERA_REQUEST && resultCode == Activity.RESULT_OK) {
             PicEntry pe = new PicEntry();
-            pe.order = entryAdapter.getCount();
-            pe.title = String.format("%03d", pe.order);
+            long order = picEntries.size();
+            pe.title = String.format("%03d", order);
 
             if (optHigh) {
                 Bitmap photo = BitmapFactory.decodeFile(
@@ -323,7 +334,8 @@ public class ScrollingActivity extends AppCompatActivity {
                 );
             }
 
-            entryAdapter.addItem(pe);
+            picEntries.add(new Pair<Long, PicEntry>(order, pe));
+            emptyView.setText("");
             entryAdapter.asort();
             entryAdapter.notifyDataSetChanged();
 
@@ -347,7 +359,7 @@ public class ScrollingActivity extends AppCompatActivity {
                 public void onFailure(String message) {
                     emptyView.setText(R.string.fail);
                     Log.e(PACKAGE_NAME, message);
-                    entryAdapter.clear();
+                    picEntries.clear();
                     entryAdapter.notifyDataSetChanged();
                 }
 
@@ -403,5 +415,20 @@ public class ScrollingActivity extends AppCompatActivity {
             return null;
         }
         return file;
+    }
+
+    private static class MyDragItem extends DragItem {
+
+        MyDragItem(Context context, int layoutId) {
+            super(context, layoutId);
+        }
+
+        @Override
+        public void onBindDragView(View clickedView, View dragView) {
+            CharSequence text = ((TextView) clickedView.findViewById(R.id.line_title)).getText();
+            Drawable dr = ((ImageView) clickedView.findViewById(R.id.line_pic)).getDrawable();
+            ((TextView) dragView.findViewById(R.id.line_title)).setText(text);
+            ((ImageView) dragView.findViewById(R.id.line_pic)).setImageDrawable(dr);
+        }
     }
 }
