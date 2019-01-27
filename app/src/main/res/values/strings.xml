@@ -17,4 +17,5 @@
     <string name="processing">processing…</string>
     <string name="picadd">picture added</string>
     <string name="no_support">Gif and Whatsapp compatible video will not work :-(</string>
+    <string name="created_by">Created with Stop-o-Moto</string>
 </resources>

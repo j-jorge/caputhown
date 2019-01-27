@@ -162,12 +162,15 @@ public class ScrollingActivity extends AppCompatActivity {
         } else if (id == R.id.action_share) {
             if (shareFile.length() > 0) {
                 final Intent sharingIntent = new Intent(Intent.ACTION_SEND);
-                sharingIntent.setType("image/gif");
-                //sharingIntent.setType("video/mp4");
-                //sharingIntent.setType("text/plain");
-                //sharingIntent.putExtra(Intent.EXTRA_TEXT, "dbmnsbdm sjakdkasd");
-                //sharingIntent.putExtra(Intent.EXTRA_STREAM, Uri.parse("file://" + shareFile));
-                sharingIntent.putExtra(Intent.EXTRA_STREAM, Uri.parse(shareFile));
+                sharingIntent.putExtra(Intent.EXTRA_TEXT, getString(R.string.created_by));
+                Uri furi = FileProvider.getUriForFile(
+                        getApplicationContext(),
+                        "de.digisocken.stop_o_moto.fileprovider",
+                        createAppFile(shareFile)
+                );
+                sharingIntent.setDataAndType(furi, getContentResolver().getType(furi));
+
+                sharingIntent.putExtra(Intent.EXTRA_STREAM, furi);
                 sharingIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
                 startActivity(Intent.createChooser(sharingIntent, getString(R.string.action_share)));
             }
@@ -288,7 +291,7 @@ public class ScrollingActivity extends AppCompatActivity {
             }
             if (aBoolean) {
                 emptyView.setText(R.string.ok);
-                shareFile = file.getPath() + "/" + getAppFolder().getPath() + "/" + nameBasic + ".gif";
+                shareFile = nameBasic + ".gif";
                 picEntries.clear();
                 entryAdapter.notifyDataSetChanged();
             } else {

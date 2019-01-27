@@ -18,4 +18,6 @@
     <string name="action_share">teilen…</string>
 
     <string name="no_support">Gif- und Whatsapp-kompatible Video wird nicht gehen :-(</string>
+    <string name="created_by">Erzeugt mit Stop-o-Moto</string>
+
 </resources>

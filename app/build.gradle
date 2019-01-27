@@ -6,8 +6,8 @@ android {
         applicationId "de.digisocken.stop_o_moto"
         minSdkVersion 19
         targetSdkVersion 22
-        versionCode 91
-        versionName "0.91"
+        versionCode 95
+        versionName "0.95"
     }
     configurations.all {
         resolutionStrategy.force 'com.google.code.findbugs:jsr305:3.0.2'
