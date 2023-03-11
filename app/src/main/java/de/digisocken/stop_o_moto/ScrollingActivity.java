@@ -343,6 +343,7 @@ public class ScrollingActivity extends AppCompatActivity {
             entryAdapter.notifyDataSetChanged();
 
             Toast.makeText(this, R.string.picadd, Toast.LENGTH_SHORT).show();
+            takePic();
         }
     }
 
