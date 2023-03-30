@@ -29,12 +29,6 @@
             android:title="@string/action_high"
             app:showAsAction="never" />
         <item
-            android:id="@+id/action_amovie"
-            android:orderInCategory="100"
-            android:checked="false"
-            android:title="@string/action_amovie"
-            app:showAsAction="never" />
-        <item
             android:id="@+id/action_rapmovie"
             android:orderInCategory="100"
             android:checked="false"
@@ -51,5 +45,10 @@
         android:id="@+id/action_movie"
         android:orderInCategory="100"
         android:title="@string/action_movie"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/action_preferences"
+        android:orderInCategory="100"
+        android:title="@string/action_preferences"
         app:showAsAction="never" />
 </menu>

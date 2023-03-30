@@ -3,7 +3,6 @@ package de.digisocken.stop_o_moto;
 import android.app.Activity;
 import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
-import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,13 +16,13 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 
-public class EntryAdapter extends DragItemAdapter<Pair<Long, PicEntry>, EntryAdapter.ViewHolder> {
+public class EntryAdapter extends DragItemAdapter<PicEntry, EntryAdapter.ViewHolder> {
     private int mLayoutId;
     private int mGrabHandleId;
     private boolean mDragOnLongPress;
     private Activity activity;
 
-    EntryAdapter(Activity context, ArrayList<Pair<Long, PicEntry>> list, int layoutId, int grabHandleId, boolean dragOnLongPress) {
+    EntryAdapter(Activity context, ArrayList<PicEntry> list, int layoutId, int grabHandleId, boolean dragOnLongPress) {
         mLayoutId = layoutId;
         mGrabHandleId = grabHandleId;
         mDragOnLongPress = dragOnLongPress;
@@ -33,7 +32,7 @@ public class EntryAdapter extends DragItemAdapter<Pair<Long, PicEntry>, EntryAda
 
     @Override
     public long getUniqueItemId(int position) {
-        return mItemList.get(position).first;
+        return mItemList.get(position).index;
     }
 
 
@@ -48,10 +47,12 @@ public class EntryAdapter extends DragItemAdapter<Pair<Long, PicEntry>, EntryAda
     public void onBindViewHolder(@NonNull ViewHolder holder, final int position) {
         super.onBindViewHolder(holder, position);
 
-        holder.tt.setText(mItemList.get(position).second.title);
-        holder.iv.setImageBitmap(mItemList.get(position).second.pic);
-        holder.iv.setMinimumHeight(mItemList.get(position).second.pic.getHeight());
-        holder.iv.setMinimumWidth(mItemList.get(position).second.pic.getWidth());
+        final PicEntry entry = mItemList.get(position);
+
+        holder.tt.setText(String.format("%03d", entry.index));
+        holder.iv.setImageBitmap(entry.pic);
+        holder.iv.setMinimumHeight(entry.pic.getHeight());
+        holder.iv.setMinimumWidth(entry.pic.getWidth());
 
         if (position%2==0) {
             holder.itemView.setBackgroundColor(ContextCompat.getColor(
@@ -72,7 +73,7 @@ public class EntryAdapter extends DragItemAdapter<Pair<Long, PicEntry>, EntryAda
             }
         });
 
-        holder.itemView.setTag(mItemList.get(position));
+        holder.itemView.setTag(entry);
     }
 
     class ViewHolder extends DragItemAdapter.ViewHolder {
@@ -86,31 +87,5 @@ public class EntryAdapter extends DragItemAdapter<Pair<Long, PicEntry>, EntryAda
             iv = itemView.findViewById(R.id.line_pic);
             ib = itemView.findViewById(R.id.line_trash);
         }
-    }
-
-    public void asort() {
-
-        Collections.sort(mItemList, new Comparator<Pair<Long,PicEntry>>() {
-            @Override
-            public int compare(Pair<Long,PicEntry> f1, Pair<Long,PicEntry> f2) {
-                long s1 = f1.first;
-                long s2 = f2.first;
-
-                return (int) (s2-s1);
-            }
-        });
-    }
-
-    public void sort() {
-
-        Collections.sort(mItemList, new Comparator<Pair<Long,PicEntry>>() {
-            @Override
-            public int compare(Pair<Long,PicEntry> f1, Pair<Long,PicEntry> f2) {
-                long s1 = f1.first;
-                long s2 = f2.first;
-
-                return (int) (s1-s2);
-            }
-        });
     }
 }
