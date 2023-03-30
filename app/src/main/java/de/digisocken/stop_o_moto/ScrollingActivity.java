@@ -3,6 +3,7 @@ package de.digisocken.stop_o_moto;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.Drawable;
@@ -10,6 +11,7 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
+import android.preference.PreferenceManager;
 import android.provider.MediaStore;
 import android.support.v4.content.FileProvider;
 import android.support.v7.app.ActionBar;
@@ -45,6 +47,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.Date;
 
 public class ScrollingActivity extends AppCompatActivity {
@@ -156,7 +159,17 @@ public class ScrollingActivity extends AppCompatActivity {
                 entryAdapter.sort();
             }
             shareFile = "";
-            new ToMovieTask().execute(optRap, optSlow);
+
+            SharedPreferences preferences =
+                PreferenceManager.getDefaultSharedPreferences(this);
+
+            new ToMovieTask().execute
+                (optRap,
+                 optSlow,
+                 preferences.getBoolean("build_main_mp4", false),
+                 preferences.getBoolean("build_gif", false),
+                 preferences.getBoolean("build_whatsapp_mp4", false));
+
             return true;
 
         } else if (id == R.id.action_share) {
@@ -217,35 +230,54 @@ public class ScrollingActivity extends AppCompatActivity {
         } else if (id == R.id.action_picture) {
             takePic();
             return true;
+        } else if (id == R.id.action_preferences) {
+            openPreferences();
+            return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    private void openPreferences() {
+        startActivity
+            (new Intent(ScrollingActivity.this, PreferenceActivity.class));
     }
 
     private class ToMovieTask extends AsyncTask<Boolean, Void, Boolean>{
         private String nameBasic;
         private File file;
+        private boolean deleteFile;
 
         @Override
         protected Boolean doInBackground(Boolean... bools) {
+            Log.e(PACKAGE_NAME, "DOINBACKGROUND");
+            final boolean optRap = bools[0];
+            final boolean optSlow = bools[1];
+            final boolean optMp4 = bools[2];
+            final boolean optGif = bools[3];
+            final boolean optWhatsApp = bools[4];
+
             FileChannelWrapper out = null;
             nameBasic = (new SimpleDateFormat("yyyyMMddHHmmss")).format(new Date());
+
             file = createAppFile(nameBasic + ".mp4");
+            deleteFile = !optMp4;
 
             try {
                 out = NIOUtils.writableFileChannel(file.getAbsolutePath());
                 AndroidSequenceEncoder encoder;
-                if (bools[1]) {
+                if (optSlow) {
                     encoder = new AndroidSequenceEncoder(out, Rational.R(8, 1));
                 } else {
                     encoder = new AndroidSequenceEncoder(out, Rational.R(13, 1));
                 }
-                if (bools[0]) entryAdapter.sort();
+                if (optRap)
+                    entryAdapter.sort();
 
                 for (Pair<Long, PicEntry> pe : picEntries) {
                     encoder.encodeImage(pe.second.pic);
                 }
 
-                if (bools[0]) {
+                if (optRap) {
                     entryAdapter.asort();
                     for (Pair<Long, PicEntry> pe : picEntries) {
                         encoder.encodeImage(pe.second.pic);
@@ -264,20 +296,22 @@ public class ScrollingActivity extends AppCompatActivity {
                 NIOUtils.closeQuietly(out);
 
                 if (ffmpeg != null) {
-                    // ------------------------------------------------- makes a gif file
-                    String[] cmdgif = {"-i", file.getPath(), getAppFolder().getPath() + "/" + nameBasic + ".gif"};
-                    conversion(cmdgif, false);
+                    if (optGif) {
+                        String[] cmdgif = {"-i", file.getPath(), getAppFolder().getPath() + "/" + nameBasic + ".gif"};
+                        conversion(cmdgif, false);
+                    }
 
-                    // --------------------------------------------- makes whatsapp compatible file
-                    String[] cmd_wa = {
+                    if (optWhatsApp) {
+                        String[] cmd_wa = {
                             "-i", file.getPath(),
                             "-c:v", "libx264",
                             "-profile:v", "baseline",
                             "-level", "3.0",
                             "-pix_fmt", "yuv420p",
                             getAppFolder().getPath() + "/" + nameBasic + "whatsapp.mp4"
-                    };
-                    conversion(cmd_wa, true);
+                        };
+                        conversion(cmd_wa, false);
+                    }
                 }
 
             }
@@ -286,20 +320,25 @@ public class ScrollingActivity extends AppCompatActivity {
 
         @Override
         protected void onPostExecute(Boolean aBoolean) {
+            // TODO: move in taskDone() as it is currently executed before the end of the conversions.
             if (ab != null) {
                 ab.setTitle("  " + getString(R.string.app_name));
             }
             if (aBoolean) {
                 emptyView.setText(R.string.ok);
                 shareFile = nameBasic + ".gif";
-                picEntries.clear();
+                //picEntries.clear();
                 entryAdapter.notifyDataSetChanged();
             } else {
                 emptyView.setText(R.string.fail);
                 shareFile = "";
-                picEntries.clear();
+                //picEntries.clear();
                 entryAdapter.notifyDataSetChanged();
             }
+
+            // if (deleteFile)
+            //     file.delete();
+
             super.onPostExecute(aBoolean);
         }
     }
@@ -347,8 +386,18 @@ public class ScrollingActivity extends AppCompatActivity {
         }
     }
 
+    private void taskDone()
+    {
+        Log.e(PACKAGE_NAME, "TASK_DONE");
+    }
+
+    private AtomicInteger m_pendingTasksCount = new AtomicInteger(0);
+
     private void conversion(final String[] cmd, final boolean delFinal) {
 
+        m_pendingTasksCount.incrementAndGet();
+
+        Log.e(PACKAGE_NAME, "CONVERSION" + String.join(" ", cmd));
         try {
             // to execute "ffmpeg -version" command you just need to pass "-version"
             ffmpeg.execute(cmd, new ExecuteBinaryResponseHandler() {
@@ -361,27 +410,30 @@ public class ScrollingActivity extends AppCompatActivity {
 
                 @Override
                 public void onFailure(String message) {
-                    emptyView.setText(R.string.fail);
+                    emptyView.setText(R.string.fail + ": " + message);
                     Log.e(PACKAGE_NAME, message);
-                    picEntries.clear();
+                    //picEntries.clear();
                     entryAdapter.notifyDataSetChanged();
                 }
 
                 @Override
                 public void onSuccess(String message) {
-                    if (delFinal) {
-                        File f = createAppFile(cmd[1]);
-                        try {
-                            if (f==null) return;
-                            f.getCanonicalFile().delete();
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                    }
+                    // if (delFinal) {
+                    //     File f = createAppFile(cmd[1]);
+                    //     try {
+                    //         if (f==null) return;
+                    //         f.getCanonicalFile().delete();
+                    //     } catch (IOException e) {
+                    //         e.printStackTrace();
+                    //     }
+                    //}
                 }
 
                 @Override
-                public void onFinish() { }
+                public void onFinish() {
+                    if (m_pendingTasksCount.decrementAndGet() == 0)
+                        taskDone();
+                }
             });
         } catch (FFmpegCommandAlreadyRunningException e) {
             // Handle if FFmpeg is already running

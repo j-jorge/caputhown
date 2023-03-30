@@ -1,6 +1,6 @@
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools"
+           tools:ignore="MissingTranslation">
     <string name="app_name">Stop-o-Moto</string>
-    <string name="large_text">:o)  </string>
     <string name="action_picture">take picture</string>
     <string name="action_share">share with…</string>
 
@@ -10,6 +10,20 @@
     <string name="action_high">high resolution</string>
     <string name="action_info">info website</string>
     <string name="action_movie">Create movie!</string>
+
+    <string name="action_preferences">Preferences</string>
+    <string name="preference_mp4_main_title">Mp4</string>
+    <string name="preference_mp4_main_summary">
+      Create an H264 video using mp4 container.
+    </string>
+    <string name="preference_mp4_whatsapp_title">Whatsapp mp4</string>
+    <string name="preference_mp4_whatsapp_summary">
+      Create a Whatsapp-compatible video.
+    </string>
+    <string name="preference_gif_title">Gif</string>
+    <string name="preference_gif_summary">
+      Create a GIF.
+    </string>
 
     <string name="fail">fail</string>
     <string name="mpg_fail">ffmpeg fail</string>

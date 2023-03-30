@@ -4,7 +4,6 @@
     <string name="ok">fertig: Videodatei ist in Dokumente/de.digisocken.stop-o-moto/ abgelegt.\n\nDu kannst nun den share Button nutzen.</string>
     <string name="fail">Mist!</string>
     <string name="mpg_fail">ffmpeg schlug fehl</string>
-    <string name="large_text">:o)   </string>
     <string name="action_picture">Bild machen</string>
     <string name="processing">verarbeite...</string>
     <string name="picadd">Bild hinzugefügt</string>
