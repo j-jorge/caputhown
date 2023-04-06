@@ -56,11 +56,6 @@ public class ScrollingActivity extends AppCompatActivity {
     private ActionBar ab = null;
     private FFmpeg ffmpeg = null;
 
-    private boolean optHigh = false;
-    private boolean optSlow = false;
-
-    private boolean optRap = false;
-
     private ArrayList<PicEntry> picEntries;
     private EntryAdapter entryAdapter;
     private TextView emptyView;
@@ -111,7 +106,10 @@ public class ScrollingActivity extends AppCompatActivity {
     }
 
     private void takePic() {
-        if (optHigh) {
+        final SharedPreferences preferences =
+            PreferenceManager.getDefaultSharedPreferences(this);
+
+        if (preferences.getBoolean("quality_high", false)) {
             File image = m_app_files.create_app_file("_temp.jpg");
 
             Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
@@ -120,6 +118,7 @@ public class ScrollingActivity extends AppCompatActivity {
                         "de.digisocken.stop_o_moto.fileprovider",
                         image
                 );
+                // This extra is required to have a high resolution image.
                 takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
                 startActivityForResult(takePictureIntent, CAMERA_REQUEST);
             }
@@ -152,19 +151,33 @@ public class ScrollingActivity extends AppCompatActivity {
                 PreferenceManager.getDefaultSharedPreferences(this);
 
             new ConversionJob
-                (m_app_files, picEntries, optRap, optSlow,
+                (m_app_files, picEntries,
+                 preferences.getBoolean("timeline_loop_back", false),
+                 preferences.getBoolean("quality_slow", false),
                  preferences.getBoolean("build_main_mp4", false),
                  preferences.getBoolean("build_gif", false),
                  preferences.getBoolean("build_whatsapp_mp4", false),
                  ffmpeg,
                  new ConversionJob.Listener() {
                      @Override
-                     public void succeed(String basename) {
-                         onPostExecute(true, basename);
+                     public void succeed(final String basename) {
+                         runOnUiThread(new Runnable() {
+                                 @Override
+                                 public void run() {
+                                     onPostExecute(true, basename);
+                                 }
+                             });
                      }
 
                      @Override
-                     public void failed() { onPostExecute(false, null); }
+                     public void failed() {
+                         runOnUiThread(new Runnable() {
+                                 @Override
+                                 public void run() {
+                                     onPostExecute(false, null);
+                                 }
+                             });
+                     }
                  })
                 .execute();
 
@@ -185,33 +198,6 @@ public class ScrollingActivity extends AppCompatActivity {
                 sharingIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
                 startActivity(Intent.createChooser(sharingIntent, getString(R.string.action_share)));
             }
-        } else if (id == R.id.action_slow) {
-            if (item.isChecked()) {
-                item.setChecked(false);
-                optSlow = false;
-            } else {
-                item.setChecked(true);
-                optSlow = true;
-            }
-            return true;
-        } else if (id == R.id.action_rapmovie) {
-            if (item.isChecked()) {
-                item.setChecked(false);
-                optRap = false;
-            } else {
-                item.setChecked(true);
-                optRap = true;
-            }
-            return true;
-        } else if (id == R.id.action_high) {
-            if (item.isChecked()) {
-                item.setChecked(false);
-                optHigh = false;
-            } else {
-                item.setChecked(true);
-                optHigh = true;
-            }
-            return true;
         } else if (id == R.id.action_info) {
             Intent intentProj = new Intent(Intent.ACTION_VIEW, Uri.parse(PROJECT_LINK));
             startActivity(intentProj);
@@ -251,16 +237,14 @@ public class ScrollingActivity extends AppCompatActivity {
             PicEntry pe = new PicEntry();
             pe.index = picEntries.size();
 
-            if (optHigh) {
+            final SharedPreferences preferences =
+                PreferenceManager.getDefaultSharedPreferences(this);
+
+            if (preferences.getBoolean("quality_high", false)) {
                 Bitmap photo = BitmapFactory.decodeFile
                     (m_app_files.app_folder().getPath() + "/_temp.jpg"
                 );
-                pe.pic = Bitmap.createScaledBitmap(
-                        photo,
-                        2*(photo.getWidth()/10),
-                        2*(photo.getHeight()/10),
-                        true
-                );
+                pe.picture = photo;
                 File f = m_app_files.create_app_file("_temp.jpg");
                 try {
                     f.getCanonicalFile().delete();
@@ -269,13 +253,20 @@ public class ScrollingActivity extends AppCompatActivity {
                 }
             } else {
                 Bitmap photo = (Bitmap) data.getExtras().get("data");
-                pe.pic = Bitmap.createScaledBitmap(
+                pe.picture = Bitmap.createScaledBitmap(
                         photo,
                         (photo.getWidth()/2)*2,
                         (photo.getHeight()/2)*2,
                         true
                 );
             }
+
+            pe.thumbnail = Bitmap.createScaledBitmap
+                (pe.picture,
+                 100,
+                 100 * pe.picture.getHeight() / pe.picture.getWidth(),
+                 true
+                 );
 
             picEntries.add(pe);
             emptyView.setText("");

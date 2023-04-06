@@ -1,28 +1,48 @@
 <PreferenceScreen
-        xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto">
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <PreferenceCategory
-            android:title="Video format">
+  <PreferenceCategory android:title="Video format">
+    <SwitchPreferenceCompat
+        android:key="build_main_mp4"
+        android:title="@string/preference_mp4_main_title"
+        android:summary="@string/preference_mp4_main_summary"
+        android:defaultValue="true"/>
 
-        <SwitchPreferenceCompat
-                android:key="build_main_mp4"
-                android:title="@string/preference_mp4_main_title"
-                android:summary="@string/preference_mp4_main_summary"
-                android:defaultValue="true"/>
+    <SwitchPreferenceCompat
+        android:key="build_whatsapp_mp4"
+        android:title="@string/preference_mp4_whatsapp_title"
+        android:summary="@string/preference_mp4_whatsapp_summary"
+        android:defaultValue="false"/>
 
-        <SwitchPreferenceCompat
-                android:key="build_whatsapp_mp4"
-                android:title="@string/preference_mp4_whatsapp_title"
-                android:summary="@string/preference_mp4_whatsapp_summary"
-                android:defaultValue="false"/>
+    <SwitchPreferenceCompat
+        android:key="build_gif"
+        android:title="@string/preference_gif_title"
+        android:summary="@string/preference_gif_summary"
+        android:defaultValue="false"/>
 
-        <SwitchPreferenceCompat
-                android:key="build_gif"
-                android:title="@string/preference_gif_title"
-                android:summary="@string/preference_gif_summary"
-                android:defaultValue="false"/>
-    </PreferenceCategory>
+    <SwitchPreferenceCompat
+        android:key="framerate_slow"
+        android:title="@string/preference_framerate_title"
+        android:summary="@string/preference_framerate_summary"
+        android:defaultValue="false"/>
+  </PreferenceCategory>
+
+  <PreferenceCategory android:title="Timeline">
+    <SwitchPreferenceCompat
+        android:key="timeline_loop_back"
+        android:title="@string/preference_loop_back_title"
+        android:summary="@string/preference_loop_back_summary"
+        android:defaultValue="false"/>
+  </PreferenceCategory>
+
+  <PreferenceCategory android:title="Quality">
+    <SwitchPreferenceCompat
+        android:key="quality_high"
+        android:title="@string/preference_high_title"
+        android:summary="@string/preference_high_summary"
+        android:defaultValue="false"/>
+  </PreferenceCategory>
 <!--
     <PreferenceCategory
             android:title="@string/widgets">

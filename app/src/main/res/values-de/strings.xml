@@ -8,9 +8,6 @@
     <string name="processing">verarbeite...</string>
     <string name="picadd">Bild hinzugefügt</string>
 
-    <string name="action_rapmovie">abc-d-cba</string>
-    <string name="action_slow">langsam</string>
-    <string name="action_high">hohe Qualität</string>
     <string name="action_info">Info Webseite</string>
     <string name="action_movie">Video erzeugen!</string>
     <string name="action_share">teilen…</string>

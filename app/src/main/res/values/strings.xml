@@ -4,9 +4,22 @@
     <string name="action_picture">take picture</string>
     <string name="action_share">share with…</string>
 
-    <string name="action_rapmovie">abc-d-cba</string>
-    <string name="action_slow">slow</string>
-    <string name="action_high">high resolution</string>
+    <string name="preference_loop_back_title">Loop back</string>
+    <string name="preference_loop_back_summary">
+      Play the pictures in order then play them backward. The last
+      frame won't be duplicated.
+    </string>
+
+    <string name="preference_framerate_title">Low framerate</string>
+    <string name="preference_framerate_summary">
+      Generate the video at 8 frames per seconds instead of 13.
+    </string>
+
+    <string name="preference_high_title">High resolution</string>
+    <string name="preference_high_summary">
+      Use pictures at the largest available resolution.
+    </string>
+
     <string name="action_info">info website</string>
     <string name="action_movie">Create movie!</string>
 

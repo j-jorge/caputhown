@@ -50,9 +50,9 @@ public class EntryAdapter extends DragItemAdapter<PicEntry, EntryAdapter.ViewHol
         final PicEntry entry = mItemList.get(position);
 
         holder.tt.setText(String.format("%03d", entry.index));
-        holder.iv.setImageBitmap(entry.pic);
-        holder.iv.setMinimumHeight(entry.pic.getHeight());
-        holder.iv.setMinimumWidth(entry.pic.getWidth());
+        holder.iv.setImageBitmap(entry.thumbnail);
+        holder.iv.setMinimumHeight(entry.thumbnail.getHeight());
+        holder.iv.setMinimumWidth(entry.thumbnail.getWidth());
 
         if (position%2==0) {
             holder.itemView.setBackgroundColor(ContextCompat.getColor(

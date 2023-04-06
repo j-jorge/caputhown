@@ -4,5 +4,6 @@ import android.graphics.Bitmap;
 
 public class PicEntry {
     public int index;
-    public Bitmap pic;
+    public Bitmap picture;
+    public Bitmap thumbnail;
 }

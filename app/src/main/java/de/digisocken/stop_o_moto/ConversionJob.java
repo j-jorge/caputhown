@@ -83,11 +83,11 @@ class ConversionJob extends AsyncTask<Void, Void, Void>
             }
 
             for (PicEntry entry : m_pictures)
-                encoder.encodeImage(entry.pic);
+                encoder.encodeImage(entry.picture);
 
             if (m_rap && !m_pictures.isEmpty())
                 for (int i = m_pictures.size() - 1; i != 0; --i)
-                    encoder.encodeImage(m_pictures.get(i).pic);
+                    encoder.encodeImage(m_pictures.get(i).picture);
 
             encoder.finish();
             oneEncodingCompleted();
