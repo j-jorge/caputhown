@@ -21,11 +21,13 @@
         android:summary="@string/preference_gif_summary"
         android:defaultValue="false"/>
 
-    <SwitchPreferenceCompat
-        android:key="framerate_slow"
+    <SeekBarPreference
+        android:key="framerate"
         android:title="@string/preference_framerate_title"
         android:summary="@string/preference_framerate_summary"
-        android:defaultValue="false"/>
+        app:min="1"
+        android:max="25"
+        android:defaultValue="15"/>
   </PreferenceCategory>
 
   <PreferenceCategory android:title="Timeline">
@@ -68,12 +70,6 @@
                 android:entries="@array/entries"
                 app:useSimpleSummaryProvider="true"
                 android:entryValues="@array/entry_values"/>
-
-        <SeekBarPreference
-                android:key="seekbar"
-                android:title="@string/title_seekbar_preference"
-                android:max="10"
-                android:defaultValue="5"/>
     </PreferenceCategory>
 
     <PreferenceCategory

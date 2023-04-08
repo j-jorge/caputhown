@@ -10,9 +10,9 @@
       frame won't be duplicated.
     </string>
 
-    <string name="preference_framerate_title">Low framerate</string>
+    <string name="preference_framerate_title">Framerate</string>
     <string name="preference_framerate_summary">
-      Generate the video at 8 frames per seconds instead of 13.
+      Generate the video at this number of frames per second.
     </string>
 
     <string name="preference_high_title">High resolution</string>

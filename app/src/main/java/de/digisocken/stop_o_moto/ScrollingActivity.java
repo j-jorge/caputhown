@@ -153,10 +153,10 @@ public class ScrollingActivity extends AppCompatActivity {
             new ConversionJob
                 (m_app_files, picEntries,
                  preferences.getBoolean("timeline_loop_back", false),
-                 preferences.getBoolean("quality_slow", false),
                  preferences.getBoolean("build_main_mp4", false),
                  preferences.getBoolean("build_gif", false),
                  preferences.getBoolean("build_whatsapp_mp4", false),
+                 preferences.getInt("framerate", 15),
                  ffmpeg,
                  new ConversionJob.Listener() {
                      @Override

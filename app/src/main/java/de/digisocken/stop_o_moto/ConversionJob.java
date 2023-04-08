@@ -34,12 +34,13 @@ class ConversionJob extends AsyncTask<Void, Void, Void>
     private final AppFiles m_app_files;
     private final ArrayList<PicEntry> m_pictures;
     private final boolean m_rap;
-    private final boolean m_slow;
     private final boolean m_build_main_mp4;
     private final boolean m_build_gif;
     private final boolean m_build_whatsapp_mp4;
+    private final int m_framesPerSecond;
     private final FFmpeg m_ffmpeg;
     private final Listener m_listener;
+
     private final AtomicInteger m_pending_tasks_count = new AtomicInteger(0);
 
     private File m_main_file;
@@ -47,16 +48,16 @@ class ConversionJob extends AsyncTask<Void, Void, Void>
 
     public ConversionJob
         (AppFiles app_files, ArrayList<PicEntry> pictures, boolean rap,
-         boolean slow, boolean main_mp4, boolean gif, boolean whatsapp,
-         FFmpeg ffmpeg, Listener listener)
+         boolean main_mp4, boolean gif, boolean whatsapp,
+         int framesPerSecond, FFmpeg ffmpeg, Listener listener)
     {
         m_app_files = app_files;
         m_pictures = pictures;
         m_rap = rap;
-        m_slow = slow;
         m_build_main_mp4 = main_mp4;
         m_build_gif = gif;
         m_build_whatsapp_mp4 = whatsapp;
+        m_framesPerSecond = framesPerSecond;
         m_ffmpeg = ffmpeg;
         m_listener = listener;
     }
@@ -75,12 +76,10 @@ class ConversionJob extends AsyncTask<Void, Void, Void>
 
         try {
             out = NIOUtils.writableFileChannel(m_main_file.getAbsolutePath());
-            AndroidSequenceEncoder encoder;
-            if (m_slow) {
-                encoder = new AndroidSequenceEncoder(out, Rational.R(8, 1));
-            } else {
-                encoder = new AndroidSequenceEncoder(out, Rational.R(13, 1));
-            }
+
+            AndroidSequenceEncoder encoder =
+                new AndroidSequenceEncoder
+                (out, Rational.R(m_framesPerSecond, 1));
 
             for (PicEntry entry : m_pictures)
                 encoder.encodeImage(entry.picture);
