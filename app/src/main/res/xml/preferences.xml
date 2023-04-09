@@ -39,107 +39,12 @@
   </PreferenceCategory>
 
   <PreferenceCategory android:title="Quality">
-    <SwitchPreferenceCompat
-        android:key="quality_high"
-        android:title="@string/preference_high_title"
-        android:summary="@string/preference_high_summary"
-        android:defaultValue="false"/>
+    <ListPreference
+        android:key="resolution"
+        android:title="@string/preference_resolution_title"
+        android:entries="@array/preference_quality_entries"
+        android:entryValues="@array/preference_quality_values"
+        android:dialogTitle="@string/resolution_dialog_title"
+        android:defaultValue="0"/>
   </PreferenceCategory>
-<!--
-    <PreferenceCategory
-            android:title="@string/widgets">
-
-
-        <Preference
-                android:key="preference"
-                android:title="Title"
-                android:summary="description"/>
-        <CheckBoxPreference
-                android:key="checkbox"
-                android:title="@string/title_checkbox_preference"
-                android:summary="@string/summary_checkbox_preference"/>
-
-        <SwitchPreferenceCompat
-                android:key="switch"
-                android:title="@string/title_switch_preference"
-                android:summary="@string/summary_switch_preference"/>
-
-        <DropDownPreference
-                android:key="dropdown"
-                android:title="@string/title_dropdown_preference"
-                android:entries="@array/entries"
-                app:useSimpleSummaryProvider="true"
-                android:entryValues="@array/entry_values"/>
-    </PreferenceCategory>
-
-    <PreferenceCategory
-            android:title="@string/dialogs">
-
-        <EditTextPreference
-                android:key="edittext"
-                android:title="@string/title_edittext_preference"
-                app:useSimpleSummaryProvider="true"
-                android:dialogTitle="@string/dialog_title_edittext_preference"/>
-
-        <ListPreference
-                android:key="list"
-                android:title="@string/title_list_preference"
-                app:useSimpleSummaryProvider="true"
-                android:entries="@array/entries"
-                android:entryValues="@array/entry_values"
-                android:dialogTitle="@string/dialog_title_list_preference"/>
-
-        <MultiSelectListPreference
-                android:key="multi_select_list"
-                android:title="@string/title_multi_list_preference"
-                android:summary="@string/summary_multi_list_preference"
-                android:entries="@array/entries"
-                android:entryValues="@array/entry_values"
-                android:dialogTitle="@string/dialog_title_multi_list_preference"/>
-    </PreferenceCategory>
-
-    <PreferenceCategory
-            android:key="advanced"
-            android:title="@string/advanced_attributes"
-            app:initialExpandedChildrenCount="1">
-
-        <Preference
-                android:key="expandable"
-                android:title="@string/title_expandable_preference"
-                android:summary="@string/summary_expandable_preference"/>
-
-        <Preference
-                android:title="@string/title_intent_preference"
-                android:summary="@string/summary_intent_preference">
-
-            <intent android:action="android.intent.action.VIEW"
-                    android:data="http://www.android.com"/>
-
-        </Preference>
-
-        <SwitchPreferenceCompat
-                android:key="parent"
-                android:title="@string/title_parent_preference"
-                android:summary="@string/summary_parent_preference"/>
-
-        <SwitchPreferenceCompat
-                android:key="child"
-                android:dependency="parent"
-                android:title="@string/title_child_preference"
-                android:summary="@string/summary_child_preference"/>
-
-        <SwitchPreferenceCompat
-                android:key="toggle_summary"
-                android:title="@string/title_toggle_summary_preference"
-                android:summaryOn="@string/summary_on_toggle_summary_preference"
-                android:summaryOff="@string/summary_off_toggle_summary_preference"/>
-
-        <Preference
-                android:key="copyable"
-                android:title="@string/title_copyable_preference"
-                android:summary="@string/summary_copyable_preference"
-                android:selectable="false"
-                app:enableCopying="true"/>
-    </PreferenceCategory>
--->
 </PreferenceScreen>

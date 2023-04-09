@@ -1,0 +1,15 @@
+<resources xmlns:tools="http://schemas.android.com/tools"
+           tools:ignore="MissingTranslation">
+    <string-array name="preference_quality_entries">
+        <item>SD (640×480)</item>
+        <item>HD (1280×720)</item>
+        <item>Full HD (1920×1080)</item>
+        <item>Max</item>
+    </string-array>
+    <string-array name="preference_quality_values">
+        <item>"480"</item>
+        <item>"720"</item>
+        <item>"1080"</item>
+        <item>"0"</item>
+    </string-array>
+</resources>

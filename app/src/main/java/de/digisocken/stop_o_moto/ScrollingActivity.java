@@ -106,29 +106,18 @@ public class ScrollingActivity extends AppCompatActivity {
     }
 
     private void takePic() {
-        final SharedPreferences preferences =
-            PreferenceManager.getDefaultSharedPreferences(this);
+        File image = m_app_files.create_app_file("_temp.jpg");
+        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
 
-        if (preferences.getBoolean("quality_high", false)) {
-            File image = m_app_files.create_app_file("_temp.jpg");
-
-            Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-            if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
-                Uri photoURI = FileProvider.getUriForFile(getApplicationContext(),
-                        "de.digisocken.stop_o_moto.fileprovider",
-                        image
-                );
-                // This extra is required to have a high resolution image.
-                takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
-                startActivityForResult(takePictureIntent, CAMERA_REQUEST);
-            }
-        } else {
-            Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-            if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
-                startActivityForResult(takePictureIntent, CAMERA_REQUEST);
-            }
+        if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
+            Uri photoURI = FileProvider.getUriForFile
+                (getApplicationContext(),
+                 "de.digisocken.stop_o_moto.fileprovider",
+                 image);
+            // This extra is required to have a high resolution image.
+            takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
+            startActivityForResult(takePictureIntent, CAMERA_REQUEST);
         }
-
     }
 
     @Override
@@ -239,34 +228,42 @@ public class ScrollingActivity extends AppCompatActivity {
 
             final SharedPreferences preferences =
                 PreferenceManager.getDefaultSharedPreferences(this);
+            final int shortDimension =
+                Integer.valueOf(preferences.getString("resolution", "0"));
 
-            if (preferences.getBoolean("quality_high", false)) {
-                Bitmap photo = BitmapFactory.decodeFile
-                    (m_app_files.app_folder().getPath() + "/_temp.jpg"
-                );
-                pe.picture = photo;
-                File f = m_app_files.create_app_file("_temp.jpg");
-                try {
-                    f.getCanonicalFile().delete();
-                } catch (IOException e) {
-                    e.printStackTrace();
+            Bitmap photo = BitmapFactory.decodeFile
+                (m_app_files.app_folder().getPath() + "/_temp.jpg");
+
+            if (shortDimension != 0) {
+                int width = photo.getWidth();
+                int height = photo.getHeight();
+
+                if (width > height) {
+                    width = shortDimension * width / height;
+                    height = shortDimension;
+                } else {
+                    height = shortDimension * height / width;
+                    width = shortDimension;
                 }
-            } else {
-                Bitmap photo = (Bitmap) data.getExtras().get("data");
-                pe.picture = Bitmap.createScaledBitmap(
-                        photo,
-                        (photo.getWidth()/2)*2,
-                        (photo.getHeight()/2)*2,
-                        true
-                );
+
+                photo = Bitmap.createScaledBitmap(photo, width, height, true);
+            }
+
+            pe.picture = photo;
+
+            try {
+                m_app_files.create_app_file("_temp.jpg")
+                    .getCanonicalFile()
+                    .delete();
+            } catch (IOException e) {
+                e.printStackTrace();
             }
 
             pe.thumbnail = Bitmap.createScaledBitmap
                 (pe.picture,
                  100,
                  100 * pe.picture.getHeight() / pe.picture.getWidth(),
-                 true
-                 );
+                 false);
 
             picEntries.add(pe);
             emptyView.setText("");

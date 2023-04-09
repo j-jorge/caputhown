@@ -15,10 +15,8 @@
       Generate the video at this number of frames per second.
     </string>
 
-    <string name="preference_high_title">High resolution</string>
-    <string name="preference_high_summary">
-      Use pictures at the largest available resolution.
-    </string>
+    <string name="preference_resolution_title">Resolution</string>
+    <string name="resolution_dialog_title">Picture dimensions.</string>
 
     <string name="action_info">info website</string>
     <string name="action_movie">Create movie!</string>
