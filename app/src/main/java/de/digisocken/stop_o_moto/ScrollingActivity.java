@@ -26,7 +26,6 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.github.hiteshsondhi88.libffmpeg.ExecuteBinaryResponseHandler;
 import com.github.hiteshsondhi88.libffmpeg.FFmpeg;
@@ -269,7 +268,6 @@ public class ScrollingActivity extends AppCompatActivity {
             emptyView.setText("");
             entryAdapter.notifyDataSetChanged();
 
-            Toast.makeText(this, R.string.picadd, Toast.LENGTH_SHORT).show();
             takePic();
         }
     }
