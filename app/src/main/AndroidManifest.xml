@@ -26,6 +26,7 @@
 
         <activity
             android:name="de.digisocken.stop_o_moto.ScrollingActivity"
+            android:exported="true"
             android:label="@string/app_name"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme">

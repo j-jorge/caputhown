@@ -9,7 +9,7 @@ android {
     defaultConfig {
         applicationId "de.digisocken.stop_o_moto"
         minSdkVersion 19
-        targetSdkVersion 22
+        targetSdkVersion 33
         versionCode 95
         versionName "0.95"
     }
